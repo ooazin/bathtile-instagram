@@ -1,0 +1,24 @@
+name: Refresh Instagram token
+
+# Long-lived tokens last about 60 days, so this refreshes them on the 1st and 15th.
+on:
+  schedule:
+    - cron: '0 0 1,15 * *'
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refresh and store the token
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GH_TOKEN: ${{ secrets.SECRETS_WRITE_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          token=$(curl -fsS --get "https://graph.instagram.com/refresh_access_token" \
+            --data-urlencode "grant_type=ig_refresh_token" \
+            --data-urlencode "access_token=$IG_ACCESS_TOKEN" | jq -r '.access_token')
+          test -n "$token" && test "$token" != "null"
+          echo "::add-mask::$token"
+          gh secret set IG_ACCESS_TOKEN --body "$token"

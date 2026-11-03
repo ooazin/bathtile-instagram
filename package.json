@@ -1,0 +1,23 @@
+{
+    "name":  "bathtile-instagram",
+    "version":  "0.1.0",
+    "private":  true,
+    "type":  "module",
+    "engines":  {
+                    "node":  "\u003e=20"
+                },
+    "scripts":  {
+                    "import:imweb":  "node scripts/import-imweb.mjs",
+                    "collections":  "node scripts/build-collections.mjs",
+                    "render":  "node scripts/render-post.mjs",
+                    "publish":  "node scripts/publish.mjs",
+                    "publish:dry":  "node scripts/publish.mjs --dry-run",
+                    "test":  "node --test"
+                },
+    "devDependencies":  {
+                            "@napi-rs/canvas":  "^0.1.65",
+                            "exceljs":  "^4.4.0",
+                            "playwright-core":  "^1.49.1",
+                            "pretendard":  "^1.3.9"
+                        }
+}
