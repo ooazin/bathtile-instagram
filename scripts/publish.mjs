@@ -125,8 +125,10 @@ export async function run({ postsDir, baseUrl, client, dryRun = false, now = new
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const dryRun = process.argv.includes('--dry-run');
   const { IG_ACCESS_TOKEN: token, IG_USER_ID: userId, PUBLIC_BASE_URL: baseUrl = 'https://example.invalid' } = process.env;
-  if (!dryRun && (!token || !userId || !process.env.PUBLIC_BASE_URL)) {
+  const postsDir = path.resolve('posts');
+  // Only a due post needs credentials, so idle scheduled runs pass before setup is finished.
+  if (!dryRun && findDuePost(postsDir) && (!token || !userId || !process.env.PUBLIC_BASE_URL)) {
     throw new Error('IG_ACCESS_TOKEN, IG_USER_ID and PUBLIC_BASE_URL are required');
   }
-  await run({ postsDir: path.resolve('posts'), baseUrl, client: createClient({ token, userId }), dryRun });
+  await run({ postsDir, baseUrl, client: createClient({ token, userId }), dryRun });
 }
