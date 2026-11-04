@@ -20,11 +20,13 @@
 ### 1. 인스타 계정 전환
 인스타그램 앱의 설정에서 계정 유형을 확인하고, 개인 계정이면 프로페셔널(비즈니스) 계정으로 전환합니다.
 
-### 2. Meta 앱 만들기
-1. [Meta for Developers](https://developers.facebook.com/)에서 앱을 만들고 Instagram 제품을 추가합니다.
-2. Instagram 로그인 방식의 API 설정에서 `bathtileco` 계정을 연결합니다.
-3. `instagram_business_basic`, `instagram_business_content_publish` 권한으로 토큰을 발급합니다.
-4. 발급 화면이나 API에서 Instagram 사용자 ID를 확인합니다.
+### 2. Meta 앱 만들기 (통합 로그인)
+1. [Meta for Developers](https://developers.facebook.com/)에서 앱을 만들고 이용 사례 `Instagram에서 메시지 및 콘텐츠 관리`를 추가합니다.
+2. 앱에 비즈니스 포트폴리오를 연결합니다. 통합 로그인 설정에 필요합니다.
+3. `API setup with Unified login`에서 새 설정을 만듭니다. 게시에는 `instagram_basic`, `instagram_content_publish` 권한이 필요합니다.
+4. `bathtileco`를 Instagram 테스터로 초대하고, Instagram 웹의 설정에서 수락합니다.
+5. 토큰을 생성합니다. 토큰은 한 번만 표시됩니다.
+6. `GET /me/assigned_instagram_accounts?fields=id,username`으로 Instagram 사용자 ID를 확인합니다.
 
 ### 3. GitHub 저장소
 1. 공개(Public) 저장소를 만들고 이 폴더를 올립니다. Instagram이 이미지를 공개 URL로 가져가기 때문입니다.
@@ -34,7 +36,6 @@
 |---|---|
 | `IG_ACCESS_TOKEN` | 2번에서 발급한 토큰 |
 | `IG_USER_ID` | Instagram 사용자 ID |
-| `SECRETS_WRITE_TOKEN` | 이 저장소의 Secrets 쓰기 권한만 가진 GitHub 토큰 (토큰 자동 갱신용) |
 
 ### 4. 첫 게시 확인
 테스트 게시물 1건을 승인하고 Actions의 `Publish due Instagram post`를 수동 실행합니다.

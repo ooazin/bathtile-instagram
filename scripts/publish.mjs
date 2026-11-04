@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const API = 'https://graph.instagram.com/v23.0';
+const API = 'https://graph.facebook.com/v26.0';
 const MAX_SLIDES = 10;
 const MAX_CAPTION = 2200;
 const MAX_HASHTAGS = 30;
@@ -38,7 +38,7 @@ export function findDuePost(postsDir, now = new Date()) {
     .sort((a, b) => Date.parse(a.post.scheduled_at) - Date.parse(b.post.scheduled_at))[0];
 }
 
-export function createClient({ token, userId, fetchImpl = fetch, pollMs = 5000, maxPolls = 24 }) {
+export function createClient({ token, userId, fetchImpl = fetch, pollMs = 60000, maxPolls = 6 }) {
   async function call(method, endpoint, params = {}) {
     const url = new URL(`${API}/${endpoint}`);
     const init = { method, headers: { Authorization: `Bearer ${token}` } };
