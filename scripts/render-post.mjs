@@ -30,15 +30,22 @@ const field = (summary, re, label) => {
   return m[1].trim();
 };
 
-// Specs always come from the Imweb export, and a sold-out colour stops the render.
-const colors = source.colors.map((c) => {
-  const p = products.get(c.productId);
-  if (!p) throw new Error(`Unknown product ${c.productId}`);
+// A sold-out or mismatched product stops the render, so it can never reach a post.
+function checkedProduct(productId, code) {
+  const p = products.get(productId);
+  if (!p) throw new Error(`Unknown product ${productId}`);
   if (p.status !== '판매중') throw new Error(`${p.name} is ${p.status}`);
-  if (!p.name.includes(c.code)) throw new Error(`${c.code} does not match ${p.name}`);
+  if (!p.name.includes(code)) throw new Error(`${code} does not match ${p.name}`);
+  return p;
+}
+
+// Specs always come from the Imweb export.
+const colors = source.colors.map((c) => {
+  const p = checkedProduct(c.productId, c.code);
+  if (c.pair) checkedProduct(c.pair.productId, c.pair.code);
   return {
     ...c,
-    ko: field(p.summary, /색상\s*:\s*(.+)$/, 'colour'),
+    ko: field(p.summary, /색상\s*:\s*(\S+)/, 'colour'),
     size: field(p.summary, /사이즈\s*:\s*(\S+)/, 'size').replace(/x/i, '×'),
     finish: field(p.summary, /스펙\s*:\s*(.+?)\s*색상/, 'finish'),
     box: field(p.summary, /1BOX\s*=\s*(.+?)\s*사이즈/, 'box'),
@@ -46,7 +53,7 @@ const colors = source.colors.map((c) => {
 });
 
 async function resize(file, outName, width) {
-  const img = await loadImage(fs.readFileSync(path.join(source.sourceDir, file)));
+  const img = await loadImage(fs.readFileSync(file));
   const height = Math.round((img.height / img.width) * width);
   const canvas = createCanvas(width, height);
   canvas.getContext('2d').drawImage(img, 0, 0, width, height);
@@ -54,19 +61,21 @@ async function resize(file, outName, width) {
 }
 
 // Native-resolution crop, so the macro shows the real surface rather than an upscale.
-async function crop(file, outName, size) {
-  const img = await loadImage(fs.readFileSync(path.join(source.sourceDir, file)));
-  const canvas = createCanvas(size, size);
-  const sx = Math.round((img.width - size) / 2);
-  const sy = Math.round((img.height - size) / 2);
-  canvas.getContext('2d').drawImage(img, sx, sy, size, size, 0, 0, size, size);
+async function crop(file, outName, width, height) {
+  const img = await loadImage(fs.readFileSync(file));
+  const canvas = createCanvas(width, height);
+  const sx = Math.round((img.width - width) / 2);
+  const sy = Math.round((img.height - height) / 2);
+  canvas.getContext('2d').drawImage(img, sx, sy, width, height, 0, 0, width, height);
   fs.writeFileSync(path.join(workDir, outName), canvas.toBuffer('image/jpeg', 92));
 }
 
 for (const c of colors) {
-  await resize(c.face, `${c.name}.jpg`, 700);
-  await crop(c.face, `${c.name}-macro.jpg`, 784);
+  await resize(path.join(source.sourceDir, c.face), `${c.name}.jpg`, 900);
+  if (c.pair) await resize(path.join(source.pairDir, c.pair.face), `${c.name}-pair.jpg`, 900);
 }
+const surfaceColor = colors.find((c) => c.name === source.surface.color);
+await crop(path.join(source.sourceDir, surfaceColor.face), 'surface.jpg', W, H);
 
 const assetUrl = (file) => pathToFileURL(path.resolve('assets', file)).href;
 const fontFaces = [[300, '3Light'], [400, '4Regular'], [500, '5Medium'], [600, '6SemiBold'], [700, '7Bold']]
@@ -92,27 +101,58 @@ function coverSlide() {
     <div class="en" style="font-size:22px;font-weight:600">${source.label}</div>
     <div style="margin-top:30px;font-size:104px;line-height:1.08;font-weight:300;letter-spacing:-.015em">${first}${rest.length ? `<br>${rest.join(' ')}` : ''}</div>
     <div style="margin-top:26px;font-size:34px;font-weight:500">${source.ko}</div>
+    <div style="margin-top:14px;font-size:27px;font-weight:400">${source.intro}</div>
   </div>
   <div class="abs" style="left:64px;bottom:64px;font-size:26px;font-weight:600;color:${INK}">${colors[0].size} · ${n} Colors</div>
   ${logo('logo-black.png', 104, 64, 60)}`);
 }
 
-function colorSlide(c, i) {
-  const tileW = 540;
-  const tileTop = 66;
-  const macro = 384;
-  const macroTop = tileTop + tileW * 2 - macro;
-  return page(`<img class="abs" src="${c.name}.jpg" style="left:56px;top:${tileTop}px;width:${tileW}px;height:${tileW * 2}px;object-fit:cover;box-shadow:0 18px 44px rgba(29,28,26,.22)">
-  <div class="abs" style="left:640px;right:56px;top:${tileTop}px">
-    <div class="en" style="font-size:22px;font-weight:500">${String(i + 1).padStart(2, '0')} / ${String(colors.length).padStart(2, '0')}</div>
-    <div style="margin-top:52px;font-size:60px;line-height:1.05;font-weight:600;letter-spacing:-.01em">${c.name}</div>
-    <div style="margin-top:16px;font-size:32px;font-weight:400">${c.ko}</div>
-    <div style="margin-top:36px;font-size:24px;line-height:1.6;font-weight:400">${c.code}<br>${c.size}</div>
+function lineupSlide() {
+  const cells = colors.map((c) => `<div>
+    <div style="height:400px;background:url(${c.name}.jpg) center/cover"></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:18px">
+      <span style="font-size:32px;font-weight:600;letter-spacing:-.01em">${c.name}</span>
+      <span style="font-size:24px;font-weight:400">${c.ko}</span>
+    </div>
+    <div style="margin-top:6px;font-size:22px;font-weight:300">${c.code}</div>
+  </div>`).join('');
+  return page(`<div class="abs" style="left:64px;right:64px;top:72px">
+    <div style="font-size:50px;font-weight:300;letter-spacing:-.015em">${colors.length} Colors</div>
+    <div style="margin-top:44px;display:grid;grid-template-columns:1fr 1fr;gap:40px 24px">${cells}</div>
   </div>
-  <div class="abs" style="left:640px;top:${macroTop - 44}px;font-size:23px;font-weight:500">표면 확대</div>
-  <img class="abs" src="${c.name}-macro.jpg" style="left:640px;top:${macroTop}px;width:${macro}px;height:${macro}px">
-  <div class="abs" style="left:56px;bottom:62px;font-size:24px;font-weight:500">${source.collection}</div>
-  ${logo('logo-black.png', 84, 56, 54)}`);
+  ${logo('logo-black.png', 84, 64, 40)}`);
+}
+
+function surfaceSlide() {
+  const { title, points } = source.surface;
+  const list = points.map((p) => `<div style="margin-top:14px;font-size:29px;font-weight:400">${p}</div>`).join('');
+  return page(`<img class="abs" src="surface.jpg" style="left:0;top:0;width:${W}px;height:${H}px">
+  <div class="abs" style="left:0;right:0;bottom:0;padding:48px 64px 56px;background:${PAPER}">
+    <div style="font-size:48px;font-weight:600;letter-spacing:-.015em;margin-bottom:26px">${title}</div>
+    ${list}
+  </div>
+  <div class="abs" style="left:64px;top:64px;background:${PAPER};padding:10px 18px;font-size:22px;font-weight:500">${surfaceColor.name} 표면 확대</div>
+  ${logo('logo-black.png', 84, 64, 56)}`);
+}
+
+function pairingSlide() {
+  const { color, title, body, baseName, featureName } = source.pairing;
+  const c = colors.find((k) => k.name === color);
+  const tileW = 430;
+  const tile = (src, name, code) => `<div style="width:${tileW}px">
+    <img src="${src}" style="display:block;width:${tileW}px;height:${tileW * 2}px;object-fit:cover">
+    <div style="margin-top:18px;font-size:27px;font-weight:600">${name}</div>
+    <div style="margin-top:4px;font-size:22px;font-weight:300">${code}</div>
+  </div>`;
+  return page(`<div class="abs" style="left:64px;right:64px;top:64px;text-align:center">
+    <div style="font-size:48px;font-weight:600;letter-spacing:-.015em">${title}</div>
+    <div style="margin-top:14px;font-size:27px;font-weight:400">${body}</div>
+  </div>
+  <div class="abs" style="left:0;right:0;top:204px;display:flex;justify-content:center;gap:16px">
+    ${tile(`${c.name}-pair.jpg`, baseName, c.pair.code)}
+    ${tile(`${c.name}.jpg`, featureName, c.code)}
+  </div>
+  ${logo('logo-black.png', 84, 64, 40)}`);
 }
 
 function specSlide() {
@@ -130,7 +170,7 @@ function specSlide() {
   ${logo('logo-white.png', 150, 64, 64)}`, INK, PAPER);
 }
 
-const slides = [coverSlide(), ...colors.map(colorSlide), specSlide()];
+const slides = [coverSlide(), lineupSlide(), surfaceSlide(), pairingSlide(), specSlide()];
 
 const browser = await chromium.launch({ channel: process.env.BROWSER_CHANNEL || 'msedge' });
 const tab = await browser.newPage({ viewport: { width: W, height: H } });

@@ -1,34 +1,32 @@
 {
-    "slug":  "arenite-stripe",
-    "collection":  "ARENITE STRIPE",
-    "ko":  "아레나이트 스트라이프",
-    "label":  "NEW COLLECTION",
-    "sourceDir":  "D:/4. 타일 이미지, 영상 RGB/Arenite 아레나이트/Arenite Stripe",
-    "colors":  [
-                   {
-                       "productId":  502,
-                       "code":  "BT-612001-STRIPE",
-                       "name":  "CREAM",
-                       "face":  "JI612001-STRIPE-1.jpg"
-                   },
-                   {
-                       "productId":  501,
-                       "code":  "BT-612002-STRIPE",
-                       "name":  "ALMOND",
-                       "face":  "JI612002-STRIPE-1.jpg"
-                   },
-                   {
-                       "productId":  500,
-                       "code":  "BT-612003-STRIPE",
-                       "name":  "BIANCO",
-                       "face":  "JI612003-STRIPE-1.jpg"
-                   },
-                   {
-                       "productId":  499,
-                       "code":  "BT-612004-STRIPE",
-                       "name":  "GRIGIO",
-                       "face":  "JI612004-STRIPE-1.jpg"
-                   }
-               ],
-    "caption":  "ARENITE STRIPE\n아레나이트 스트라이프\n\n잔잔한 세로 결이 살아 있는 600×1200 포세린 타일입니다.\n4가지 컬러로 만나보세요.\n\n· 규격 600×1200\n· 마감 포세린 무광\n· 포장 1BOX 2pcs / 1.44㎡\n· 컬러 CREAM, ALMOND, BIANCO, GRIGIO\n\n제품 문의는 프로필 링크 또는 bathtileco.com\n\n#벳센타일 #타일 #포세린타일 #600x1200 #대형타일 #인테리어자재 #아레나이트 #스트라이프타일"
+  "slug": "arenite-stripe",
+  "collection": "ARENITE STRIPE",
+  "ko": "아레나이트 스트라이프",
+  "label": "NEW COLLECTION",
+  "intro": "사암의 결에 더한 잔잔한 세로 스트라이프",
+  "sourceDir": "D:/4. 타일 이미지, 영상 RGB/Arenite 아레나이트/Arenite Stripe",
+  "pairDir": "D:/4. 타일 이미지, 영상 RGB/600X1200",
+  "colors": [
+    { "productId": 502, "code": "BT-612001-STRIPE", "name": "CREAM", "face": "JI612001-STRIPE-1.jpg",
+      "pair": { "productId": 253, "code": "BT-612001", "face": "BT-612001 (ARE 612 CREAM)/Arenite_ARE-IV 612_1.jpg" } },
+    { "productId": 501, "code": "BT-612002-STRIPE", "name": "ALMOND", "face": "JI612002-STRIPE-1.jpg",
+      "pair": { "productId": 252, "code": "BT-612002", "face": "BT-612002 (ARE 612 ALMOND)/Arenite_ARE-BW 612_1.jpg" } },
+    { "productId": 500, "code": "BT-612003-STRIPE", "name": "BIANCO", "face": "JI612003-STRIPE-1.jpg",
+      "pair": { "productId": 251, "code": "BT-612003", "face": "BT-612003 (ARE 612 BIANCO)/Arenite_ARE-WH 612_1.jpg" } },
+    { "productId": 499, "code": "BT-612004-STRIPE", "name": "GRIGIO", "face": "JI612004-STRIPE-1.jpg",
+      "pair": { "productId": 250, "code": "BT-612004", "face": "BT-612004 (ARE 612 GRIGIO)/Arenite_ARE-LG 612_1.jpg" } }
+  ],
+  "surface": {
+    "color": "ALMOND",
+    "title": "사암의 결을 담은 표면",
+    "points": ["사암의 질감을 표현한 아레나이트 컬렉션", "표면에 흐르는 잔잔한 세로 스트라이프", "차분한 무광 포세린 마감"]
+  },
+  "pairing": {
+    "color": "CREAM",
+    "title": "일반 아레나이트와 함께",
+    "body": "같은 컬러의 일반 아레나이트와 함께 구성할 수 있습니다.",
+    "baseName": "일반 아레나이트",
+    "featureName": "스트라이프"
+  },
+  "caption": "ARENITE STRIPE\n아레나이트 스트라이프\n\n사암의 결을 표현한 아레나이트에 잔잔한 세로 스트라이프를 더한 600×1200 포세린 타일입니다.\n같은 컬러의 일반 아레나이트와 함께 구성할 수 있습니다.\n\n· 규격 600×1200\n· 마감 포세린 무광\n· 포장 1BOX 2pcs / 1.44㎡\n· 컬러 CREAM, ALMOND, BIANCO, GRIGIO\n\n제품 문의는 프로필 링크 또는 bathtileco.com\n\n#벳센타일 #타일 #포세린타일 #600x1200 #대형타일 #인테리어자재 #아레나이트 #스트라이프타일"
 }
