@@ -1,0 +1,28 @@
+{
+  "slug": "arenite-combo",
+  "template": "combo",
+  "ko": "아레나이트 + 아레나이트 스트라이프",
+  "label": "COMBINATION",
+  "title": "일반과 스트라이프,<br>함께 쓰는 아레나이트",
+  "intro": "같은 컬렉션으로 면에 변화를 더하는 구성",
+  "specTitle": "ARENITE + STRIPE",
+  "sourceDir": "D:/4. 타일 이미지, 영상 RGB/Arenite 아레나이트/Arenite Stripe",
+  "coverColor": "ALMOND",
+  "largeColor": "GRIGIO",
+  "largeText": "일반과 스트라이프를 함께 구성한 이미지입니다.",
+  "gridTitle": "4가지 컬러로 만나는 조합",
+  "colors": [
+    { "productId": 502, "code": "BT-612001-STRIPE", "name": "CREAM", "face": "JI612001-STRIPE-1.jpg", "combo": "JI612003-STRIPE-ex.jpg", "pair": { "productId": 253, "code": "BT-612001" } },
+    { "productId": 501, "code": "BT-612002-STRIPE", "name": "ALMOND", "face": "JI612002-STRIPE-1.jpg", "combo": "JI612002-STRIPE-ex.jpg", "pair": { "productId": 252, "code": "BT-612002" } },
+    { "productId": 500, "code": "BT-612003-STRIPE", "name": "BIANCO", "face": "JI612003-STRIPE-1.jpg", "combo": "JI612001-STRIPE-ex.jpg", "pair": { "productId": 251, "code": "BT-612003" } },
+    { "productId": 499, "code": "BT-612004-STRIPE", "name": "GRIGIO", "face": "JI612004-STRIPE-1.jpg", "combo": "JI612004-STRIPE-ex.jpg", "pair": { "productId": 250, "code": "BT-612004" } }
+  ],
+  "compare": {
+    "color": "ALMOND",
+    "title": "두 가지 표면",
+    "body": "차분한 일반 타일과 세로 결이 살아 있는 스트라이프",
+    "baseName": "일반 아레나이트",
+    "featureName": "스트라이프"
+  },
+  "caption": "ARENITE + ARENITE STRIPE\n아레나이트 조합 제안\n\n일반 아레나이트와 스트라이프를 함께 구성한 조합입니다.\n차분한 일반 타일 사이에 세로 결을 더해 면에 변화를 줄 수 있습니다.\n\n· 규격 600×1200\n· 마감 포세린 무광\n· 포장 1BOX 2pcs / 1.44㎡\n· 컬러 CREAM, ALMOND, BIANCO, GRIGIO\n\n제품 문의는 프로필 링크 또는 bathtileco.com\n\n#벳센타일 #타일 #포세린타일 #600x1200 #대형타일 #인테리어자재 #아레나이트 #스트라이프타일"
+}
