@@ -39,16 +39,22 @@ function checkedProduct(productId, code) {
   return p;
 }
 
+const specOf = (p) => ({
+  size: field(p.summary, /사이즈\s*:\s*(\S+)/, 'size').replace(/x/i, '×'),
+  box: field(p.summary, /1BOX\s*=\s*(\S+\s*=\s*\S+)/, 'box'),
+});
+
 // Specs always come from the Imweb export.
-const colors = source.colors.map((c) => {
+const colors =source.colors.map((c) => {
   const p = checkedProduct(c.productId, c.code);
   if (c.pair) checkedProduct(c.pair.productId, c.pair.code);
   return {
     ...c,
-    ko: field(p.summary, /색상\s*:\s*(\S+)/, 'colour'),
+    ko: field(p.summary, /색상\s*:\s*(.+?)(?:\s+원산지|$)/, 'colour'),
     size: field(p.summary, /사이즈\s*:\s*(\S+)/, 'size').replace(/x/i, '×'),
     finish: field(p.summary, /스펙\s*:\s*(.+?)\s*색상/, 'finish'),
-    box: field(p.summary, /1BOX\s*=\s*(.+?)\s*사이즈/, 'box'),
+    box: field(p.summary, /1BOX\s*=\s*(\S+\s*=\s*\S+)/, 'box'),
+    large: c.large && { ...c.large, ...specOf(checkedProduct(c.large.productId, c.large.code)) },
   };
 });
 
@@ -74,9 +80,71 @@ for (const c of colors) {
   await resize(path.join(source.sourceDir, c.face), `${c.name}.jpg`, 900);
   if (c.pair?.face) await resize(path.join(source.pairDir, c.pair.face), `${c.name}-pair.jpg`, 900);
   if (c.combo) await resize(path.join(source.sourceDir, c.combo), `${c.name}-combo.jpg`, 1080);
+  if (c.large) await resize(path.join(source.sourceDir, c.large.face), `${c.name}-large.jpg`, 1000);
 }
 const surfaceColor = source.surface && colors.find((c) => c.name === source.surface.color);
 if (surfaceColor) await crop(path.join(source.sourceDir, source.surface.face ?? surfaceColor.face), 'surface.jpg', W, H);
+
+function boxBlur(values, width, height, radius) {
+  let out = values;
+  for (let pass = 0; pass < 3; pass++) {
+    const across = new Float32Array(width * height);
+    for (let y = 0; y < height; y++) {
+      let sum = 0;
+      for (let x = -radius; x <= radius; x++) sum += out[y * width + Math.min(width - 1, Math.max(0, x))];
+      for (let x = 0; x < width; x++) {
+        across[y * width + x] = sum / (2 * radius + 1);
+        sum += out[y * width + Math.min(width - 1, x + radius + 1)] - out[y * width + Math.max(0, x - radius)];
+      }
+    }
+    const down = new Float32Array(width * height);
+    for (let x = 0; x < width; x++) {
+      let sum = 0;
+      for (let y = -radius; y <= radius; y++) sum += across[Math.min(height - 1, Math.max(0, y)) * width + x];
+      for (let y = 0; y < height; y++) {
+        down[y * width + x] = sum / (2 * radius + 1);
+        sum += across[Math.min(height - 1, y + radius + 1) * width + x] - across[Math.max(0, y - radius) * width + x];
+      }
+    }
+    out = down;
+  }
+  return out;
+}
+
+// Lights a mold map from one side on a dark ground. The map is cropped from the centre,
+// which leaves out the factory code printed in its corner.
+async function moldRelief(file, outName, { cropW, cropH, width, height, lightX, lightY, reach, base = 0.1, gain = 1.9 }) {
+  const img = await loadImage(fs.readFileSync(file));
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, (img.width - cropW) / 2, (img.height - cropH) / 2, cropW, cropH, 0, 0, width, height);
+  const pixels = ctx.getImageData(0, 0, width, height);
+  const gray = new Float32Array(width * height);
+  for (let i = 0; i < gray.length; i++) gray[i] = (pixels.data[i * 4] + pixels.data[i * 4 + 1] + pixels.data[i * 4 + 2]) / 3;
+  const low = boxBlur(gray, width, height, Math.max(4, Math.round(width / 28)));
+  for (let i = 0; i < gray.length; i++) {
+    const x = i % width;
+    const y = Math.floor(i / width);
+    const light = Math.max(0.3, 1 - Math.hypot(x - lightX, y - lightY) / reach);
+    const level = Math.max(0, Math.min(1, base + ((gray[i] - low[i]) / 128) * gain * light)) * 255;
+    pixels.data[i * 4] = level;
+    pixels.data[i * 4 + 1] = level * 0.975;
+    pixels.data[i * 4 + 2] = level * 0.93;
+  }
+  ctx.putImageData(pixels, 0, 0);
+  fs.writeFileSync(path.join(workDir, outName), canvas.toBuffer('image/jpeg', 92));
+}
+
+if (source.mold) {
+  const a = path.join(source.sourceDir, source.mold.a);
+  const b = path.join(source.sourceDir, source.mold.b);
+  await moldRelief(a, 'relief-cover.jpg', { cropW: 2400, cropH: 3000, width: W, height: H, lightX: 280, lightY: 320, reach: 1250 });
+  // The comparison shows the mold maps untouched, cropped from the centre.
+  await crop(a, 'mold-a.jpg', 2400, 2400);
+  await crop(b, 'mold-b.jpg', 2400, 2400);
+  for (const c of colors) await crop(path.join(source.sourceDir, c.relief), `${c.name}-relief.jpg`, 1400, 1400);
+}
 
 // Both tiles come from one combination image, so their tones stay comparable.
 if (source.compare) {
@@ -94,18 +162,17 @@ for (const [i, file] of (source.variants?.faces ?? []).entries()) {
 }
 
 const assetUrl = (file) => pathToFileURL(path.resolve('assets', file)).href;
-const fontFaces = [[300, '3Light'], [400, '4Regular'], [500, '5Medium'], [600, '6SemiBold'], [700, '7Bold']]
-  .map(([weight, file]) => `@font-face{font-family:Paperlogy;src:url("${assetUrl(`fonts/Paperlogy-${file}.woff2`)}");font-weight:${weight}}`)
-  .join('');
+const fontUrl = pathToFileURL(path.resolve('node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2')).href;
 
 const page = (body, bg = PAPER, color = INK) => `<!doctype html><meta charset="utf-8"><style>
-${fontFaces}
+@font-face{font-family:Pretendard;src:url("${fontUrl}");font-weight:45 920}
 *{box-sizing:border-box;margin:0}
-html,body{width:${W}px;height:${H}px;overflow:hidden;background:${bg};color:${color};font-family:Paperlogy}
+html,body{width:${W}px;height:${H}px;overflow:hidden;background:${bg};color:${color};font-family:Pretendard}
 .abs{position:absolute}.en{letter-spacing:.14em;text-transform:uppercase}
 </style>${body}`;
 
-const logo = (file, width, right, bottom) => `<img class="abs" src="${assetUrl(file)}" style="right:${right}px;bottom:${bottom}px;width:${width}px;opacity:.5">`;
+// Same size and position on every slide.
+const logo = (file) => `<img class="abs" src="${assetUrl(file)}" style="right:64px;bottom:56px;width:84px;opacity:.5">`;
 
 function coverSlide() {
   const n = colors.length;
@@ -120,7 +187,7 @@ function coverSlide() {
     <div style="margin-top:14px;font-size:27px;font-weight:400">${source.intro}</div>
   </div>
   <div class="abs" style="left:64px;bottom:64px;font-size:26px;font-weight:600;color:${INK}">${colors[0].size} · ${n} Colors</div>
-  ${logo('logo-black.png', 104, 64, 60)}`);
+  ${logo('logo-black.png')}`);
 }
 
 function lineupSlide() {
@@ -136,7 +203,7 @@ function lineupSlide() {
     <div style="font-size:50px;font-weight:300;letter-spacing:-.015em">${colors.length} Colors</div>
     <div style="margin-top:44px;display:grid;grid-template-columns:1fr 1fr;gap:40px 24px">${cells}</div>
   </div>
-  ${logo('logo-black.png', 84, 64, 40)}`);
+  ${logo('logo-black.png')}`);
 }
 
 function surfaceSlide() {
@@ -148,7 +215,7 @@ function surfaceSlide() {
     ${list}
   </div>
   <div class="abs" style="left:64px;top:64px;background:${PAPER};padding:10px 18px;font-size:22px;font-weight:500">${surfaceColor.name} 표면 확대</div>
-  ${logo('logo-black.png', 84, 64, 56)}`);
+  ${logo('logo-black.png')}`);
 }
 
 function pairingSlide() {
@@ -168,7 +235,7 @@ function pairingSlide() {
     ${tile(`${c.name}-pair.jpg`, baseName, c.pair.code)}
     ${tile(`${c.name}.jpg`, featureName, c.code)}
   </div>
-  ${logo('logo-black.png', 84, 64, 40)}`);
+  ${logo('logo-black.png')}`);
 }
 
 function specSlide() {
@@ -183,7 +250,7 @@ function specSlide() {
     <div style="margin-top:50px;display:grid;gap:20px">${lineup}</div>
   </div>
   <div class="abs" style="left:64px;bottom:64px;font-size:30px;line-height:1.45"><span style="font-weight:300">제품 문의</span><br><span style="font-weight:600">bathtileco.com</span></div>
-  ${logo('logo-white.png', 150, 64, 64)}`, INK, PAPER);
+  ${logo('logo-white.png')}`, INK, PAPER);
 }
 
 function colorCoverSlide() {
@@ -196,7 +263,7 @@ function colorCoverSlide() {
     <div style="margin-top:14px;font-size:27px;font-weight:400">${source.intro}</div>
   </div>
   <div class="abs" style="left:64px;bottom:64px;font-size:26px;font-weight:600">${c.size} · ${c.code}</div>
-  ${logo('logo-black.png', 104, 64, 60)}`);
+  ${logo('logo-black.png')}`);
 }
 
 function variantsSlide() {
@@ -209,7 +276,7 @@ function variantsSlide() {
   </div>
   <div class="abs" style="left:0;right:0;top:330px;display:flex;justify-content:center;gap:16px">${tiles}</div>
   <div class="abs" style="left:40px;top:${330 + tileW * 2 + 20}px;font-size:23px;font-weight:400">${colors[0].code} · ${colors[0].size}</div>
-  ${logo('logo-black.png', 84, 64, 40)}`);
+  ${logo('logo-black.png')}`);
 }
 
 function comboCoverSlide() {
@@ -220,7 +287,7 @@ function comboCoverSlide() {
     <div style="margin-top:14px;font-size:50px;line-height:1.16;font-weight:300;letter-spacing:-.015em">${source.title}</div>
     <div style="margin-top:12px;font-size:25px;font-weight:400">${source.intro}</div>
   </div>
-  ${logo('logo-black.png', 104, 64, 60)}`);
+  ${logo('logo-black.png')}`);
 }
 
 function compareSlide() {
@@ -240,7 +307,7 @@ function compareSlide() {
     ${tile('compare-base.jpg', baseName, c.pair.code)}
     ${tile('compare-feature.jpg', featureName, c.code)}
   </div>
-  ${logo('logo-black.png', 84, 64, 40)}`);
+  ${logo('logo-black.png')}`);
 }
 
 function comboLargeSlide() {
@@ -250,7 +317,7 @@ function comboLargeSlide() {
     <div style="font-size:50px;font-weight:600;letter-spacing:-.01em">${c.name}</div>
     <div style="margin-top:10px;font-size:27px;font-weight:400">${source.largeText}</div>
   </div>
-  ${logo('logo-black.png', 84, 64, 54)}`);
+  ${logo('logo-black.png')}`);
 }
 
 function comboGridSlide() {
@@ -262,7 +329,7 @@ function comboGridSlide() {
     <div style="font-size:44px;font-weight:600;letter-spacing:-.015em">${source.gridTitle}</div>
     <div style="margin-top:32px;display:grid;grid-template-columns:464px 464px;gap:24px">${cells}</div>
   </div>
-  ${logo('logo-black.png', 84, 64, 34)}`);
+  ${logo('logo-black.png')}`);
 }
 
 function comboSpecSlide() {
@@ -278,10 +345,95 @@ function comboSpecSlide() {
     <div style="margin-top:46px">${head}${list}</div>
   </div>
   <div class="abs" style="left:64px;bottom:64px;font-size:30px;line-height:1.45"><span style="font-weight:300">제품 문의</span><br><span style="font-weight:600">bathtileco.com</span></div>
-  ${logo('logo-white.png', 150, 64, 64)}`, INK, PAPER);
+  ${logo('logo-white.png')}`, INK, PAPER);
+}
+
+function moldCoverSlide() {
+  const chip = W / colors.length;
+  const chips = colors.map((c, i) => `<div class="abs" style="left:${i * chip}px;bottom:0;width:${chip}px;height:${chip}px;background:url(${c.name}.jpg) center/100% 100%"></div>`).join('');
+  return page(`<img class="abs" src="relief-cover.jpg" style="left:0;top:0;width:${W}px;height:${H}px">
+  <div class="abs" style="left:56px;top:64px;font-size:62px;line-height:1.2;font-weight:700;letter-spacing:-.03em">${source.hook}</div>
+  <div class="abs" style="left:54px;right:40px;bottom:${chip + 92}px;font-size:190px;line-height:1;font-weight:800;letter-spacing:-.035em">${source.collection}</div>
+  <div class="abs" style="left:60px;bottom:${chip + 44}px;font-size:30px;font-weight:500">${source.ko} · ${source.intro}</div>
+  ${chips}
+  ${logo('logo-white.png')}`, INK, PAPER);
+}
+
+function moldConceptSlide() {
+  const { title, body, groups } = source.mold;
+  const size = 308;
+  const cell = ([mold, turn]) => `<div style="position:relative;width:${size}px;height:${size}px;overflow:hidden">
+    <img src="mold-${mold}.jpg" style="display:block;width:${size}px;height:${size}px;transform:rotate(${turn}deg)">
+    <span class="abs" style="left:12px;top:6px;font-size:32px;font-weight:800;color:#fff">${mold.toUpperCase()}</span>
+  </div>`;
+  const group = ({ label, cells }) => `<div style="font-size:27px;font-weight:700;margin:22px 0 12px">${label}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,${size}px);gap:6px">${cells.map(cell).join('')}</div>`;
+  return page(`<div class="abs" style="left:68px;right:68px;top:44px">
+    <div style="font-size:50px;font-weight:700;letter-spacing:-.025em">${title}</div>
+    <div style="margin-top:10px;font-size:27px;font-weight:400">${body}</div>
+    ${groups.map(group).join('')}
+  </div>
+  ${logo('logo-black.png')}`);
+}
+
+// Each colour runs as a diagonal band of its own relief image; colour is not adjusted.
+function surfaceBandsSlide() {
+  const n = colors.length;
+  const slope = 150;
+  const step = (H + slope) / n;
+  const angle = (Math.atan(slope / W) * 180) / Math.PI;
+  const bands = colors.map((c, i) => {
+    const y = (k) => k * step;
+    const points = `0 ${y(i)}px,100% ${y(i) - slope}px,100% ${y(i + 1) - slope}px,0 ${y(i + 1)}px`;
+    const shade = i < 2 || c.name === 'FOG' ? INK : PAPER;
+    return `<div class="abs" style="inset:0;background:url(${c.name}-relief.jpg) center/cover;clip-path:polygon(${points})"></div>
+    <div class="abs" style="left:56px;top:${y(i) + 26}px;color:${shade};transform:rotate(-${angle}deg);transform-origin:left top;font-size:32px;font-weight:700;letter-spacing:.02em">${c.name}</div>`;
+  }).join('');
+  return page(`${bands}${logo('logo-white.png')}`);
+}
+
+function sizesSlide() {
+  const unit = 248; // px per 600mm, so both formats share one scale
+  const both = colors.filter((c) => c.large);
+  const single = colors.filter((c) => !c.large);
+  const label = (text) => `<div style="margin-top:8px;font-size:21px;font-weight:400">${text}</div>`;
+  const row = (c) => `<div style="display:flex;gap:18px;align-items:flex-start;margin-top:26px">
+    <div style="width:170px;padding-top:4px"><div style="font-size:30px;font-weight:600">${c.name}</div><div style="margin-top:4px;font-size:22px;font-weight:400">${c.ko}</div></div>
+    <div><img src="${c.name}.jpg" style="display:block;width:${unit}px;height:${unit}px;object-fit:cover">${label(c.size)}</div>
+    <div><img src="${c.name}-large.jpg" style="display:block;width:${unit * 2}px;height:${unit}px;object-fit:cover">${label(c.large.size)}</div>
+  </div>`;
+  const smallW = 226;
+  const small = single.map((c) => `<div style="width:${smallW}px"><img src="${c.name}.jpg" style="display:block;width:${smallW}px;height:${smallW}px;object-fit:cover">
+    <div style="margin-top:10px;font-size:26px;font-weight:600">${c.name}</div><div style="margin-top:2px;font-size:20px;font-weight:400">${c.ko} · ${c.size}</div></div>`).join('');
+  return page(`<div class="abs" style="left:64px;right:64px;top:64px">
+    <div style="font-size:46px;font-weight:600;letter-spacing:-.015em">${source.sizesTitle}</div>
+    ${both.map(row).join('')}
+    <div style="margin-top:32px;border-top:1px solid rgba(29,28,26,.25);padding-top:26px;display:flex;justify-content:space-between">${small}</div>
+  </div>
+  ${logo('logo-black.png')}`);
+}
+
+function sizesSpecSlide() {
+  const specs = new Map(colors.flatMap((c) => [[c.size, c.box], ...(c.large ? [[c.large.size, c.large.box]] : [])]));
+  const rows = [...specs].map(([size, box]) => [size, `1BOX ${box}`]);
+  rows.unshift(['구분·마감', colors[0].finish]);
+  const table = rows.map(([k, v]) => `<div style="display:flex;padding:22px 0;border-bottom:1px solid rgba(244,242,237,.3);font-size:30px"><div style="width:250px;font-weight:300">${k}</div><div style="font-weight:500">${v}</div></div>`).join('');
+  const sizes = [...specs.keys()];
+  const grid = 'display:grid;grid-template-columns:200px 1fr 1fr;align-items:center';
+  const head = `<div style="${grid};font-size:22px;font-weight:300;margin-bottom:6px"><span>컬러</span>${sizes.map((s) => `<span>${s}</span>`).join('')}</div>`;
+  const list = colors.map((c) => `<div style="${grid};padding:11px 0;font-size:24px"><span style="font-weight:600">${c.name}</span><span style="font-weight:300">${c.code}</span><span style="font-weight:300">${c.large?.code ?? '-'}</span></div>`).join('');
+  return page(`<div class="abs" style="left:64px;right:64px;top:72px">
+    <div style="font-size:64px;font-weight:300;letter-spacing:-.015em;line-height:1.1">${source.collection}</div>
+    <div style="margin-top:12px;font-size:30px;font-weight:500">${source.ko}</div>
+    <div style="margin-top:36px;border-top:1px solid rgba(244,242,237,.3)">${table}</div>
+    <div style="margin-top:38px">${head}${list}</div>
+  </div>
+  <div class="abs" style="left:64px;bottom:60px;font-size:30px;line-height:1.45"><span style="font-weight:300">제품 문의</span><br><span style="font-weight:600">bathtileco.com</span></div>
+  ${logo('logo-white.png')}`, INK, PAPER);
 }
 
 const TEMPLATES = {
+  sizes: () => [moldCoverSlide(), moldConceptSlide(), surfaceBandsSlide(), sizesSlide(), sizesSpecSlide()],
   color: () => [colorCoverSlide(), variantsSlide(), surfaceSlide(), specSlide()],
   combo: () => [comboCoverSlide(), compareSlide(), comboLargeSlide(), comboGridSlide(), comboSpecSlide()],
   collection: () => [coverSlide(), lineupSlide(), surfaceSlide(), pairingSlide(), specSlide()],

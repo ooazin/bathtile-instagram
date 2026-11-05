@@ -1,0 +1,120 @@
+{
+  "slug": "icona",
+  "template": "sizes",
+  "collection": "ICONA",
+  "ko": "아이코나",
+  "label": "COLLECTION",
+  "intro": "2가지 텍스처 디자인",
+  "sizesTitle": "컬러별 사이즈 구성",
+  "sourceDir": "D:/4. 타일 이미지, 영상 RGB/ICONA 아이코나 시리즈/VENICE (ICONA)",
+  "colors": [
+    {
+      "productId": 447,
+      "code": "BT-PD 6331",
+      "name": "WHITE",
+      "face": "PD6331 600x600mm/PD6331-1.jpg",
+      "large": {
+        "productId": 445,
+        "code": "BT-PD 126331",
+        "face": "PD126331 600x1200mm/PD126331-1.jpg"
+      },
+      "relief": "PD6331 600x600mm/PD6331-1-몰드.jpg"
+    },
+    {
+      "productId": 446,
+      "code": "BT-PD 6332",
+      "name": "CREAM",
+      "face": "PD6332 600x600mm/PD6332-1.jpg",
+      "large": {
+        "productId": 444,
+        "code": "BT-PD 126332",
+        "face": "PD126332 600x1200mm/PD126332-1.jpg"
+      },
+      "relief": "PD6332 600x600mm/PD6332-1-몰드.jpg"
+    },
+    {
+      "productId": 497,
+      "code": "BT-PD 6334",
+      "name": "CLAY",
+      "face": "PD6334 (ICONA CLAY).jpg",
+      "relief": "PD6334 600x600mm/PD6334 600x600mm-mould.jpg"
+    },
+    {
+      "productId": 496,
+      "code": "BT-PD 6335",
+      "name": "TAUPE",
+      "face": "PD6335 (ICONA TAUPE).jpg",
+      "relief": "PD6335 600x600mm/PD6335 600x600mm-mould.jpg"
+    },
+    {
+      "productId": 495,
+      "code": "BT-PD 6336",
+      "name": "FOG",
+      "face": "PD6336 (ICONA FOG).jpg",
+      "relief": "PD6336 600x600mm/PD6336 600x600mm-mould.jpg"
+    },
+    {
+      "productId": 498,
+      "code": "BT-PD 6339",
+      "name": "COAL",
+      "face": "PD6339 (ICONA COAL).jpg",
+      "relief": "PD6339 600x600mm/PD6339 600x600mm-mould.jpg"
+    }
+  ],
+  "mold": {
+    "a": "MOULD 6060-A.jpg",
+    "b": "MOULD 6060-B.jpg",
+    "title": "표면을 바꾸는 2가지 텍스처 디자인",
+    "body": "텍스처의 방향과 형태가 다양하게 나타납니다.",
+    "groups": [
+      {
+        "label": "일반 몰드 제품 · 텍스처 디자인 1가지",
+        "cells": [
+          [
+            "a",
+            0
+          ],
+          [
+            "a",
+            0
+          ],
+          [
+            "a",
+            0
+          ]
+        ]
+      },
+      {
+        "label": "아이코나 · 텍스처 디자인 2가지",
+        "cells": [
+          [
+            "a",
+            0
+          ],
+          [
+            "b",
+            90
+          ],
+          [
+            "a",
+            180
+          ],
+          [
+            "b",
+            270
+          ],
+          [
+            "a",
+            90
+          ],
+          [
+            "b",
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  "caption": "ICONA\n아이코나\n\n2가지 텍스처 디자인을 담은 포세린 타일입니다.\n2가지 몰드로 표면을 구성해 텍스처의 방향과 형태가 다양하게 나타납니다.\n\n· WHITE, CREAM: 600×600, 600×1200\n· CLAY, TAUPE, FOG, COAL: 600×600\n· 마감 포세린 무광\n· 포장 600×600 1BOX 4pcs / 1.44㎡, 600×1200 1BOX 2pcs / 1.44㎡\n\n제품 문의는 프로필 링크 또는 bathtileco.com\n\n#벳센타일 #타일 #포세린타일 #600x600 #600x1200 #인테리어자재 #아이코나 #몰드타일",
+  "hook": "텍스처가<br>하나가 아닙니다"
+}
