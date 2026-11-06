@@ -10,6 +10,8 @@ const W = 1080;
 const H = 1350;
 const INK = '#1d1c1a';
 const PAPER = '#f4f2ed';
+// Matches Instagram's dark post panel, so dark slides sit flush beside the caption.
+const DARK = '#212328';
 
 const slug = process.argv[2];
 if (!slug) throw new Error('Usage: node scripts/render-post.mjs <slug>');
@@ -156,6 +158,19 @@ async function coverCrop(file, outName) {
   fs.writeFileSync(path.join(workDir, outName), canvas.toBuffer('image/jpeg', 92));
 }
 
+// A fixed window of a source image, scaled to the slide size.
+async function cropRegion(file, outName, [sx, sy, sw, sh], width, height) {
+  const img = await loadImage(fs.readFileSync(file));
+  const canvas = createCanvas(width, height);
+  canvas.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, width, height);
+  fs.writeFileSync(path.join(workDir, outName), canvas.toBuffer('image/jpeg', 92));
+}
+
+for (const f of source.family ?? []) {
+  checkedProduct(f.productId, f.code);
+  await resize(path.join(source.sourceDir, f.face), `family-${f.name}.jpg`, 300);
+}
+if (source.space) await cropRegion(path.join(source.sourceDir, source.space.file), 'space.jpg', source.space.crop, W, 620);
 if (source.scene) await coverCrop(path.join(source.sourceDir, source.scene), 'scene.jpg');
 if (source.prints) {
   for (let n = 1; n <= source.prints.count; n++) {
@@ -273,7 +288,7 @@ function specSlide() {
     <div style="margin-top:50px;display:grid;gap:20px">${lineup}</div>
   </div>
   <div class="abs" style="left:64px;bottom:64px;font-size:30px;line-height:1.45"><span style="font-weight:300">제품 문의</span><br><span style="font-weight:600">bathtileco.com</span></div>
-  ${logo('logo-white.png')}`, INK, PAPER);
+  ${logo('logo-white.png')}`, DARK, PAPER);
 }
 
 function colorCoverSlide() {
@@ -368,7 +383,7 @@ function comboSpecSlide() {
     <div style="margin-top:46px">${head}${list}</div>
   </div>
   <div class="abs" style="left:64px;bottom:64px;font-size:30px;line-height:1.45"><span style="font-weight:300">제품 문의</span><br><span style="font-weight:600">bathtileco.com</span></div>
-  ${logo('logo-white.png')}`, INK, PAPER);
+  ${logo('logo-white.png')}`, DARK, PAPER);
 }
 
 function moldCoverSlide() {
@@ -379,7 +394,7 @@ function moldCoverSlide() {
   <div class="abs" style="left:54px;right:40px;bottom:${chip + 92}px;font-size:190px;line-height:1;font-weight:800;letter-spacing:-.035em">${source.collection}</div>
   <div class="abs" style="left:60px;bottom:${chip + 44}px;font-size:30px;font-weight:500">${source.ko} · ${source.intro}</div>
   ${chips}
-  ${logo('logo-white.png')}`, INK, PAPER);
+  ${logo('logo-white.png')}`, DARK, PAPER);
 }
 
 function moldConceptSlide() {
@@ -443,7 +458,86 @@ function printsMoldsSlide() {
     </div>
     <div style="margin-top:48px;font-size:27px;font-weight:400">${note}</div>
   </div>
-  ${logo('logo-white.png')}`, INK, PAPER);
+  ${logo('logo-white.png')}`, DARK, PAPER);
+}
+
+// Editorial series: a short accent rule marks each section, tile-square markers point out features.
+function edHeader(color) {
+  return `<div class="abs en" style="left:64px;top:58px;display:flex;align-items:center;gap:14px;font-size:18px;font-weight:600;color:${color}">
+    <span style="width:28px;height:2px;background:currentColor"></span>${source.collection} ${colors[0].name}</div>`;
+}
+
+function edHeadline([light, bold], accent) {
+  const strong = bold.replace(/<em>(.+?)<\/em>/g, `<span style="color:${accent}">$1</span>`);
+  return `<div style="font-size:56px;line-height:1.28;letter-spacing:-.02em"><div style="font-weight:300">${light}</div><div style="font-weight:600">${strong}</div></div>`;
+}
+
+const edLabel = (text, color) => `<div style="display:inline-block;font-size:19px;font-weight:600;color:${color};border-bottom:2px solid ${color};padding-bottom:4px;margin-bottom:20px">${text}</div>`;
+const edSquare = (color, size = 16) => `<span style="display:inline-block;width:${size}px;height:${size}px;background:${color};flex:none"></span>`;
+
+function edCoverSlide() {
+  const c = colors[0];
+  const { label, line } = source.cover;
+  return page(`<img class="abs" src="scene.jpg" style="left:0;top:0;width:${W}px;height:${H}px">
+  ${edHeader(INK)}
+  <div class="abs" style="left:64px;right:220px;bottom:64px">
+    ${edLabel(label, source.accent.onLight)}
+    <div style="font-size:84px;line-height:1;font-weight:500;letter-spacing:-.025em">${source.collection} ${c.name}</div>
+    <div style="margin-top:20px;font-size:30px;font-weight:400">${line}</div>
+    <div style="margin-top:14px;font-size:22px;font-weight:400">${source.ko} ${c.ko} · ${c.size} · 포세린 무광</div>
+  </div>
+  ${logo('logo-black.png')}`);
+}
+
+function edSurfaceSlide() {
+  const { label, lines, marks, body } = source.surface;
+  const mark = ({ text, x, y }) => `<div class="abs" style="left:${x}px;top:${y}px;display:flex;align-items:center;gap:12px;font-size:22px;font-weight:500">
+    ${edSquare(INK, 14)}<span style="border-bottom:1px solid ${INK};padding-bottom:2px">${text}</span></div>`;
+  return page(`<img class="abs" src="surface.jpg" style="left:0;top:0;width:${W}px;height:${H}px">
+  ${edHeader(INK)}
+  <div class="abs" style="left:64px;right:64px;top:132px">${edLabel(label, INK)}${edHeadline(lines, INK)}</div>
+  ${marks.map(mark).join('')}
+  <div class="abs" style="left:64px;right:220px;bottom:64px;font-size:24px;line-height:1.6;font-weight:400">${body}</div>
+  ${logo('logo-black.png')}`);
+}
+
+function edSpaceSlide() {
+  const { label, lines, tag, points } = source.space;
+  const cols = points.map(([title, text], i) => `<div style="flex:1;padding:0 26px;${i ? 'border-left:1px solid rgba(244,242,237,.18)' : 'padding-left:0'}">
+    ${edSquare(source.accent.onDark, 18)}
+    <div style="margin-top:18px;font-size:25px;font-weight:600">${title}</div>
+    <div style="margin-top:10px;font-size:20px;line-height:1.55;font-weight:400;opacity:.8">${text}</div></div>`).join('');
+  return page(`${edHeader(PAPER)}
+  <div class="abs" style="left:64px;right:64px;top:132px">${edLabel(label, source.accent.onDark)}${edHeadline(lines, source.accent.onDark)}</div>
+  <img class="abs" src="space.jpg" style="left:0;top:430px;width:${W}px;height:620px">
+  <div class="abs" style="left:24px;top:454px;background:rgba(29,28,26,.6);color:${PAPER};padding:6px 14px;border-radius:16px;font-size:17px;font-weight:500">${tag}</div>
+  <div class="abs" style="left:64px;right:200px;top:1102px;display:flex">${cols}</div>
+  ${logo('logo-white.png')}`, DARK, PAPER);
+}
+
+function edSpecSlide() {
+  const c = colors[0];
+  const rows = [['규격', c.size], ['구분·마감', c.finish], ['포장', `1BOX ${c.box}`], ['품번', c.code]]
+    .map(([k, v]) => `<div style="display:flex;padding:22px 0;border-bottom:1px solid rgba(244,242,237,.18);font-size:26px"><div style="width:220px;font-weight:300;opacity:.8">${k}</div><div style="font-weight:500">${v}</div></div>`).join('');
+  const family = source.family ? `<div class="abs" style="left:64px;right:64px;top:760px">
+    ${edLabel(`${source.collection} 컬러 ${source.family.length}종`, source.accent.onDark)}
+    <div style="display:flex;gap:12px">${source.family.map((f) => `<div style="width:148px">
+      <img src="family-${f.name}.jpg" style="display:block;width:148px;height:148px;${f.name === c.name ? `outline:3px solid ${source.accent.onDark};outline-offset:4px` : ''}">
+      <div style="margin-top:14px;font-size:19px;font-weight:${f.name === c.name ? 700 : 400}">${f.name}</div></div>`).join('')}</div>
+  </div>` : '';
+  return page(`${edHeader(PAPER)}
+  <div class="abs" style="left:64px;right:64px;top:132px">
+    ${edLabel('제품 사양', source.accent.onDark)}
+    <div style="font-size:56px;font-weight:500;letter-spacing:-.02em">${source.collection} ${c.name}</div>
+    <div style="margin-top:8px;font-size:26px;font-weight:400;opacity:.85">${source.ko} ${c.ko}</div>
+    <div style="margin-top:40px;display:flex;gap:44px;align-items:flex-start">
+      <img src="${c.name}.jpg" style="display:block;width:330px;height:330px;object-fit:cover">
+      <div style="flex:1;border-top:1px solid rgba(244,242,237,.18)">${rows}</div>
+    </div>
+  </div>
+  ${family}
+  <div class="abs" style="left:64px;bottom:60px;font-size:24px;line-height:1.5"><span style="font-weight:300;opacity:.8">제품 문의</span><br><span style="font-weight:600">bathtileco.com</span></div>
+  ${logo('logo-white.png')}`, DARK, PAPER);
 }
 
 function sizesSlide() {
@@ -483,10 +577,11 @@ function sizesSpecSlide() {
     <div style="margin-top:38px">${head}${list}</div>
   </div>
   <div class="abs" style="left:64px;bottom:60px;font-size:30px;line-height:1.45"><span style="font-weight:300">제품 문의</span><br><span style="font-weight:600">bathtileco.com</span></div>
-  ${logo('logo-white.png')}`, INK, PAPER);
+  ${logo('logo-white.png')}`, DARK, PAPER);
 }
 
 const TEMPLATES = {
+  editorial: () => [edCoverSlide(), edSurfaceSlide(), edSpaceSlide(), edSpecSlide()],
   series: () => [sceneCoverSlide(), printsMoldsSlide(), surfaceSlide(), specSlide()],
   sizes: () => [moldCoverSlide(), moldConceptSlide(), surfaceBandsSlide(), sizesSlide(), sizesSpecSlide()],
   color: () => [colorCoverSlide(), variantsSlide(), surfaceSlide(), specSlide()],

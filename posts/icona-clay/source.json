@@ -1,0 +1,119 @@
+{
+  "slug": "icona-clay",
+  "template": "editorial",
+  "collection": "ICONA",
+  "ko": "아이코나",
+  "sourceDir": "D:/4. 타일 이미지, 영상 RGB/ICONA 아이코나 시리즈/VENICE (ICONA)",
+  "colors": [
+    {
+      "productId": 497,
+      "code": "BT-PD 6334",
+      "name": "CLAY",
+      "face": "PD6334 600x600mm/PD6334 600x600mm-1.jpg"
+    }
+  ],
+  "accent": {
+    "onLight": "#8e5236",
+    "onDark": "#e0ae92"
+  },
+  "scene": "PD6334 600x600mm/PD6334 600x600mm空间场景图合.jpg",
+  "cover": {
+    "label": "신규 컬러",
+    "line": "흙빛을 닮은 따뜻한 브라운"
+  },
+  "surface": {
+    "color": "CLAY",
+    "face": "PD6334 600x600mm/PD6334 600x600mm-mould.jpg",
+    "label": "표면",
+    "lines": [
+      "빛이 닿으면",
+      "결이 드러납니다."
+    ],
+    "marks": [
+      {
+        "text": "몰드 입체감",
+        "x": 600,
+        "y": 470
+      },
+      {
+        "text": "무광 마감",
+        "x": 150,
+        "y": 730
+      },
+      {
+        "text": "방향이 다른 텍스처",
+        "x": 560,
+        "y": 990
+      }
+    ],
+    "body": "2가지 몰드로 만든 표면이라<br>텍스처의 방향과 형태가 다양하게 나타납니다."
+  },
+  "space": {
+    "file": "PD6334 600x600mm/PD6334 600x600mm空间场景图合1.jpg",
+    "crop": [
+      0,
+      2150,
+      2200,
+      1263
+    ],
+    "label": "공간",
+    "lines": [
+      "바닥에 깔면,",
+      "공간에 <em>온기</em>가 번집니다."
+    ],
+    "tag": "공간 이미지",
+    "points": [
+      [
+        "무광 표면",
+        "빛 반사가 적어<br>차분하게 보여요"
+      ],
+      [
+        "600×600",
+        "1BOX 4장<br>1.44㎡ 포장"
+      ],
+      [
+        "다른 무늬",
+        "16가지 프린팅으로<br>타일마다 달라요"
+      ]
+    ]
+  },
+  "caption": "_\nICONA CLAY\n아이코나 브라운\n\n흙빛을 닮은 따뜻한 브라운 컬러의 포세린 타일입니다.\n2가지 몰드로 만든 무광 표면에 16가지 디자인 프린팅이 더해져, 타일마다 무늬와 텍스처가 다르게 나타납니다.\n\n· 규격 600×600\n· 마감 포세린 무광\n· 포장 1BOX 4pcs / 1.44㎡\n· 품번 BT-PD 6334\n\n제품 문의는 프로필 링크 또는 bathtileco.com\n\n#벳센타일 #타일 #포세린타일 #600x600 #인테리어자재 #아이코나 #몰드타일 #브라운타일",
+  "family": [
+    {
+      "productId": 447,
+      "code": "BT-PD 6331",
+      "name": "WHITE",
+      "face": "PD6331 600x600mm/PD6331-1.jpg"
+    },
+    {
+      "productId": 446,
+      "code": "BT-PD 6332",
+      "name": "CREAM",
+      "face": "PD6332 600x600mm/PD6332-1.jpg"
+    },
+    {
+      "productId": 497,
+      "code": "BT-PD 6334",
+      "name": "CLAY",
+      "face": "PD6334 600x600mm/PD6334 600x600mm-1.jpg"
+    },
+    {
+      "productId": 496,
+      "code": "BT-PD 6335",
+      "name": "TAUPE",
+      "face": "PD6335 600x600mm/PD6335 600x600mm-1.jpg"
+    },
+    {
+      "productId": 495,
+      "code": "BT-PD 6336",
+      "name": "FOG",
+      "face": "PD6336 600x600mm/PD6336 600x600mm-1.jpg"
+    },
+    {
+      "productId": 498,
+      "code": "BT-PD 6339",
+      "name": "COAL",
+      "face": "PD6339 600x600mm/PD6339 600x600mm-1.jpg"
+    }
+  ]
+}
