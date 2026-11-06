@@ -146,6 +146,26 @@ if (source.mold) {
   for (const c of colors) await crop(path.join(source.sourceDir, c.relief), `${c.name}-relief.jpg`, 1400, 1400);
 }
 
+// A maker's room image, cropped to 4:5 from the bottom so the floor stays in frame.
+async function coverCrop(file, outName) {
+  const img = await loadImage(fs.readFileSync(file));
+  const sw = Math.min(img.width, Math.round((img.height * W) / H));
+  const sh = Math.round((sw * H) / W);
+  const canvas = createCanvas(W, H);
+  canvas.getContext('2d').drawImage(img, (img.width - sw) / 2, img.height - sh, sw, sh, 0, 0, W, H);
+  fs.writeFileSync(path.join(workDir, outName), canvas.toBuffer('image/jpeg', 92));
+}
+
+if (source.scene) await coverCrop(path.join(source.sourceDir, source.scene), 'scene.jpg');
+if (source.prints) {
+  for (let n = 1; n <= source.prints.count; n++) {
+    await resize(path.join(source.sourceDir, source.prints.file.replace('{n}', n)), `print-${n}.jpg`, 240);
+  }
+  // Mold maps shown untouched, cropped from the centre away from the factory code.
+  await crop(path.join(source.sourceDir, source.prints.moldA), 'mold-a.jpg', 2400, 2400);
+  await crop(path.join(source.sourceDir, source.prints.moldB), 'mold-b.jpg', 2400, 2400);
+}
+
 // Both tiles come from one combination image, so their tones stay comparable.
 if (source.compare) {
   const c = colors.find((k) => k.name === source.compare.color);
@@ -214,7 +234,7 @@ function surfaceSlide() {
     <div style="font-size:48px;font-weight:600;letter-spacing:-.015em;margin-bottom:26px">${title}</div>
     ${list}
   </div>
-  <div class="abs" style="left:64px;top:64px;background:${PAPER};padding:10px 18px;font-size:22px;font-weight:500">${surfaceColor.name} 표면 확대</div>
+  <div class="abs" style="left:64px;top:64px;background:${PAPER};padding:10px 18px;font-size:22px;font-weight:500">${source.surface.label ?? surfaceColor.name} 표면 확대</div>
   ${logo('logo-black.png')}`);
 }
 
@@ -242,7 +262,10 @@ function specSlide() {
   const c = colors[0];
   const rows = [['규격', c.size], ['구분·마감', c.finish], ['포장', `1BOX ${c.box}`]]
     .map(([k, v]) => `<div style="display:flex;padding:30px 0;border-bottom:1px solid rgba(244,242,237,.3);font-size:34px"><div style="width:250px;font-weight:300">${k}</div><div style="font-weight:500">${v}</div></div>`).join('');
-  const lineup = colors.map((k) => `<div style="display:flex;align-items:center;gap:26px;font-size:27px"><img src="${k.name}.jpg" style="width:64px;height:64px;object-fit:cover"><span style="width:200px;font-weight:600">${k.name}</span><span style="font-weight:300">${k.code}</span></div>`).join('');
+  // A single colour gets a large swatch with its name and code stacked beside it.
+  const lineup = colors.length === 1
+    ? colors.map((k) => `<div style="display:flex;align-items:flex-end;gap:36px"><img src="${k.name}.jpg" style="width:400px;height:400px;object-fit:cover"><div><div style="font-size:44px;font-weight:700">${k.name}</div><div style="margin-top:8px;font-size:28px;font-weight:300">${k.ko} · ${k.code}</div></div></div>`).join('')
+    : colors.map((k) => `<div style="display:flex;align-items:center;gap:26px;font-size:27px"><img src="${k.name}.jpg" style="width:64px;height:64px;object-fit:cover"><span style="width:200px;font-weight:600">${k.name}</span><span style="font-weight:300">${k.code}</span></div>`).join('');
   return page(`<div class="abs" style="left:64px;right:64px;top:80px">
     <div style="font-size:66px;font-weight:300;letter-spacing:-.015em;line-height:1.1">${source.collection}</div>
     <div style="margin-top:14px;font-size:32px;font-weight:500">${source.ko}</div>
@@ -392,6 +415,37 @@ function surfaceBandsSlide() {
   return page(`${bands}${logo('logo-white.png')}`);
 }
 
+function sceneCoverSlide() {
+  const c = colors[0];
+  return page(`<img class="abs" src="scene.jpg" style="left:0;top:0;width:${W}px;height:${H}px">
+  <div class="abs" style="left:0;right:0;bottom:0;height:560px;background:linear-gradient(transparent,rgba(20,19,18,.72))"></div>
+  <div class="abs" style="left:60px;right:200px;bottom:60px;color:${PAPER}">
+    <div style="font-size:112px;line-height:1;font-weight:650;letter-spacing:-.03em">${source.collection} ${c.name}</div>
+    <div style="margin-top:20px;font-size:30px;font-weight:500">${source.ko} ${c.ko} · ${c.size} · ${c.finish.replace(/[()]/g, '').replace(/\s+/, ' ')}</div>
+  </div>
+  ${logo('logo-white.png')}`);
+}
+
+function printsMoldsSlide() {
+  const { title, body, note } = source.prints;
+  const n = source.prints.count;
+  const prints = Array.from({ length: n }, (_, i) => `<img src="print-${i + 1}.jpg" style="display:block;width:115px;height:115px">`).join('');
+  const mold = (k) => `<div style="position:relative;width:350px;height:350px"><img src="mold-${k}.jpg" style="display:block;width:350px;height:350px"><span class="abs" style="left:14px;top:6px;font-size:40px;font-weight:800;color:#fff">${k.toUpperCase()}</span></div>`;
+  const label = (text) => `<div style="font-size:27px;font-weight:700;margin-bottom:14px">${text}</div>`;
+  return page(`<div class="abs" style="left:56px;right:56px;top:56px">
+    <div style="font-size:60px;line-height:1.2;font-weight:700;letter-spacing:-.025em">${title}</div>
+    <div style="margin-top:14px;font-size:28px;font-weight:400">${body}</div>
+    <div style="margin-top:64px">${label(`디자인 프린팅 ${n}가지`)}<div style="display:grid;grid-template-columns:repeat(8,115px);gap:6px">${prints}</div></div>
+    <div style="margin:26px 0 0;font-size:64px;font-weight:300;line-height:1">×</div>
+    <div style="margin-top:20px;display:flex;align-items:flex-end;gap:6px">
+      <div>${label('몰드 2가지')}<div style="display:flex;gap:6px">${mold('a')}${mold('b')}</div></div>
+      <div style="margin-left:34px;padding-bottom:8px"><div style="font-size:64px;font-weight:300;line-height:1">=</div><div style="font-size:150px;line-height:1;font-weight:800;letter-spacing:-.04em">${n * 2}</div><div style="font-size:30px;font-weight:600">가지 표면</div></div>
+    </div>
+    <div style="margin-top:48px;font-size:27px;font-weight:400">${note}</div>
+  </div>
+  ${logo('logo-white.png')}`, INK, PAPER);
+}
+
 function sizesSlide() {
   const unit = 248; // px per 600mm, so both formats share one scale
   const both = colors.filter((c) => c.large);
@@ -433,6 +487,7 @@ function sizesSpecSlide() {
 }
 
 const TEMPLATES = {
+  series: () => [sceneCoverSlide(), printsMoldsSlide(), surfaceSlide(), specSlide()],
   sizes: () => [moldCoverSlide(), moldConceptSlide(), surfaceBandsSlide(), sizesSlide(), sizesSpecSlide()],
   color: () => [colorCoverSlide(), variantsSlide(), surfaceSlide(), specSlide()],
   combo: () => [comboCoverSlide(), compareSlide(), comboLargeSlide(), comboGridSlide(), comboSpecSlide()],
