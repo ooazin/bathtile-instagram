@@ -1,0 +1,107 @@
+{
+  "slug": "icona-taupe",
+  "template": "editorialPrints",
+  "collection": "ICONA",
+  "ko": "아이코나",
+  "sourceDir": "D:/4. 타일 이미지, 영상 RGB/ICONA 아이코나 시리즈/VENICE (ICONA)",
+  "colors": [
+    {
+      "productId": 496,
+      "code": "BT-PD 6335",
+      "name": "TAUPE",
+      "face": "PD6335 600x600mm/PD6335 600x600mm-1.jpg"
+    }
+  ],
+  "accent": {
+    "onLight": "#6b6157",
+    "onDark": "#cdbfad"
+  },
+  "scene": "PD6335 600x600mm/PD6335 600x600mm空间场景图合.jpg",
+  "cover": {
+    "label": "신규 컬러",
+    "line": "차분하게 가라앉은 웜 그레이"
+  },
+  "variations": {
+    "file": "PD6335 600x600mm/PD6335 600x600mm-{n}.jpg",
+    "picks": [
+      1,
+      6,
+      11,
+      16
+    ],
+    "label": "프린팅",
+    "lines": [
+      "같은 TAUPE라도",
+      "타일마다 <em>무늬</em>가 다릅니다."
+    ],
+    "body": "16가지 디자인 프린팅 중 4가지를 나란히 놓았습니다."
+  },
+  "space": {
+    "file": "PD6335 600x600mm/PD6335 600x600mm空间场景图合.jpg",
+    "crop": [
+      0,
+      2600,
+      3543,
+      2034
+    ],
+    "label": "공간",
+    "lines": [
+      "넓게 깔수록,",
+      "공간이 <em>차분</em>해집니다."
+    ],
+    "tag": "공간 이미지",
+    "points": [
+      [
+        "무광 표면",
+        "빛 반사가 적어<br>차분하게 보여요"
+      ],
+      [
+        "몰드 텍스처",
+        "2가지 몰드로<br>표면에 변화를 줘요"
+      ],
+      [
+        "600×600",
+        "1BOX 4장<br>1.44㎡ 포장"
+      ]
+    ]
+  },
+  "family": [
+    {
+      "productId": 447,
+      "code": "BT-PD 6331",
+      "name": "WHITE",
+      "face": "PD6331 600x600mm/PD6331-1.jpg"
+    },
+    {
+      "productId": 446,
+      "code": "BT-PD 6332",
+      "name": "CREAM",
+      "face": "PD6332 600x600mm/PD6332-1.jpg"
+    },
+    {
+      "productId": 497,
+      "code": "BT-PD 6334",
+      "name": "CLAY",
+      "face": "PD6334 600x600mm/PD6334 600x600mm-1.jpg"
+    },
+    {
+      "productId": 496,
+      "code": "BT-PD 6335",
+      "name": "TAUPE",
+      "face": "PD6335 600x600mm/PD6335 600x600mm-1.jpg"
+    },
+    {
+      "productId": 495,
+      "code": "BT-PD 6336",
+      "name": "FOG",
+      "face": "PD6336 600x600mm/PD6336 600x600mm-1.jpg"
+    },
+    {
+      "productId": 498,
+      "code": "BT-PD 6339",
+      "name": "COAL",
+      "face": "PD6339 600x600mm/PD6339 600x600mm-1.jpg"
+    }
+  ],
+  "caption": "_\nICONA TAUPE\n아이코나 그레이\n\n차분하게 가라앉은 웜 그레이 컬러의 포세린 타일입니다.\n2가지 몰드로 만든 무광 표면에 16가지 디자인 프린팅이 더해져, 타일마다 무늬와 텍스처가 다르게 나타납니다.\n\n· 규격 600×600\n· 마감 포세린 무광\n· 포장 1BOX 4pcs / 1.44㎡\n· 품번 BT-PD 6335\n\n제품 문의는 프로필 링크 또는 bathtileco.com\n\n#벳센타일 #타일 #포세린타일 #600x600 #인테리어자재 #아이코나 #몰드타일 #그레이타일"
+}

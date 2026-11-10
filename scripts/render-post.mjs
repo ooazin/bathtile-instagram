@@ -170,6 +170,9 @@ for (const f of source.family ?? []) {
   checkedProduct(f.productId, f.code);
   await resize(path.join(source.sourceDir, f.face), `family-${f.name}.jpg`, 300);
 }
+for (const n of source.variations?.picks ?? []) {
+  await resize(path.join(source.sourceDir, source.variations.file.replace('{n}', n)), `variation-${n}.jpg`, 600);
+}
 if (source.space) await cropRegion(path.join(source.sourceDir, source.space.file), 'space.jpg', source.space.crop, W, 620);
 if (source.scene) await coverCrop(path.join(source.sourceDir, source.scene), 'scene.jpg');
 if (source.prints) {
@@ -515,6 +518,18 @@ function edSpaceSlide() {
   ${logo('logo-white.png')}`, DARK, PAPER);
 }
 
+function edPrintsSlide() {
+  const { label, lines, body, picks } = source.variations;
+  const size = picks.length > 2 ? 400 : 470;
+  const cells = picks.map((n) => `<div><img src="variation-${n}.jpg" style="display:block;width:${size}px;height:${size}px">
+    <div style="margin-top:10px;display:flex;align-items:center;gap:10px;font-size:19px;font-weight:500">${edSquare(source.accent.onLight, 12)}프린팅 ${String(n).padStart(2, '0')}</div></div>`).join('');
+  return page(`${edHeader(INK)}
+  <div class="abs" style="left:64px;right:64px;top:118px">${edLabel(label, source.accent.onLight)}${edHeadline(lines, source.accent.onLight)}
+    <div style="margin-top:14px;font-size:22px;font-weight:400">${body}</div></div>
+  <div class="abs" style="left:64px;top:404px;display:grid;grid-template-columns:${size}px ${size}px;gap:12px">${cells}</div>
+  ${logo('logo-black.png')}`);
+}
+
 function edSpecSlide() {
   const c = colors[0];
   const rows = [['규격', c.size], ['구분·마감', c.finish], ['포장', `1BOX ${c.box}`], ['품번', c.code]]
@@ -581,6 +596,7 @@ function sizesSpecSlide() {
 }
 
 const TEMPLATES = {
+  editorialPrints: () => [edCoverSlide(), edPrintsSlide(), edSpaceSlide(), edSpecSlide()],
   editorial: () => [edCoverSlide(), edSurfaceSlide(), edSpaceSlide(), edSpecSlide()],
   series: () => [sceneCoverSlide(), printsMoldsSlide(), surfaceSlide(), specSlide()],
   sizes: () => [moldCoverSlide(), moldConceptSlide(), surfaceBandsSlide(), sizesSlide(), sizesSpecSlide()],
