@@ -173,8 +173,11 @@ for (const f of source.family ?? []) {
 for (const n of source.variations?.picks ?? []) {
   await resize(path.join(source.sourceDir, source.variations.file.replace('{n}', n)), `variation-${n}.jpg`, 600);
 }
-if (source.space) await cropRegion(path.join(source.sourceDir, source.space.file), 'space.jpg', source.space.crop, W, 620);
-if (source.scene) await coverCrop(path.join(source.sourceDir, source.scene), 'scene.jpg');
+if (source.space) await cropRegion(path.join(source.sourceDir, source.space.file), 'space.jpg', source.space.crop, W, source.space.full ? H : 620);
+// The zoom circle shows the tile face at its own resolution, not an enlargement.
+if (source.space?.zoom) await crop(path.join(source.sourceDir, colors[0].face), 'zoom.jpg', source.space.zoom, source.space.zoom);
+if (source.scene && source.sceneCrop) await cropRegion(path.join(source.sourceDir, source.scene), 'scene.jpg', source.sceneCrop, W, H);
+else if (source.scene) await coverCrop(path.join(source.sourceDir, source.scene), 'scene.jpg');
 if (source.prints) {
   for (let n = 1; n <= source.prints.count; n++) {
     await resize(path.join(source.sourceDir, source.prints.file.replace('{n}', n)), `print-${n}.jpg`, 240);
@@ -530,6 +533,41 @@ function edPrintsSlide() {
   ${logo('logo-black.png')}`);
 }
 
+// Tone scale: the post's colour shown wider among its neighbours, light to dark.
+function edToneSlide() {
+  const { label, lines, body, order } = source.tone;
+  const c = colors[0];
+  const gap = 10;
+  const narrow = 180;
+  const wide = W - 128 - narrow * (order.length - 1) - gap * (order.length - 1);
+  const band = (name) => {
+    const f = source.family.find((k) => k.name === name);
+    const own = name === c.name;
+    return `<div style="width:${own ? wide : narrow}px">
+      <div style="height:600px;background:url(family-${name}.jpg) center/cover"></div>
+      <div style="margin-top:16px;display:flex;align-items:center;gap:10px;font-size:${own ? 24 : 19}px;font-weight:${own ? 700 : 500}">${own ? edSquare(source.accent.onLight, 12) : ''}${name}</div>
+      ${own ? `<div style="margin-top:6px;font-size:19px;font-weight:400">${c.ko} · ${f.code}</div>` : ''}
+    </div>`;
+  };
+  return page(`${edHeader(INK)}
+  <div class="abs" style="left:64px;right:64px;top:118px">${edLabel(label, source.accent.onLight)}${edHeadline(lines, source.accent.onLight)}
+    <div style="margin-top:14px;font-size:22px;font-weight:400">${body}</div></div>
+  <div class="abs" style="left:64px;right:64px;top:420px;display:flex;gap:${gap}px">${order.map(band).join('')}</div>
+  ${logo('logo-black.png')}`);
+}
+
+// Full room image with a magnified circle of the real tile face.
+function edSpaceZoomSlide() {
+  const { label, lines, tag, zoom, zoomAt: [x, y] } = source.space;
+  return page(`<img class="abs" src="space.jpg" style="left:0;top:0;width:${W}px;height:${H}px">
+  ${edHeader(INK)}
+  <div class="abs" style="left:64px;right:64px;top:118px">${edLabel(label, source.accent.onLight)}${edHeadline(lines, source.accent.onLight)}</div>
+  <div class="abs" style="left:${x}px;top:${y}px;width:${zoom}px;height:${zoom}px;border-radius:50%;background:url(zoom.jpg) center/cover;box-shadow:0 0 0 6px ${PAPER},0 18px 40px rgba(0,0,0,.18)"></div>
+  <div class="abs" style="left:${x}px;top:${y + zoom + 28}px;width:${zoom}px;text-align:center;font-size:21px;font-weight:600">${colors[0].name} 표면 확대</div>
+  <div class="abs" style="left:24px;bottom:24px;background:rgba(29,28,26,.55);color:${PAPER};padding:6px 14px;border-radius:16px;font-size:17px;font-weight:500">${tag}</div>
+  ${logo('logo-black.png')}`);
+}
+
 function edSpecSlide() {
   const c = colors[0];
   const rows = [['규격', c.size], ['구분·마감', c.finish], ['포장', `1BOX ${c.box}`], ['품번', c.code]]
@@ -596,6 +634,7 @@ function sizesSpecSlide() {
 }
 
 const TEMPLATES = {
+  editorialTone: () => [edCoverSlide(), edToneSlide(), edSpaceZoomSlide(), edSpecSlide()],
   editorialPrints: () => [edCoverSlide(), edPrintsSlide(), edSpaceSlide(), edSpecSlide()],
   editorial: () => [edCoverSlide(), edSurfaceSlide(), edSpaceSlide(), edSpecSlide()],
   series: () => [sceneCoverSlide(), printsMoldsSlide(), surfaceSlide(), specSlide()],

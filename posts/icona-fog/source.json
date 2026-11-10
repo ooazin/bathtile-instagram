@@ -1,0 +1,104 @@
+{
+  "slug": "icona-fog",
+  "template": "editorialTone",
+  "collection": "ICONA",
+  "ko": "아이코나",
+  "sourceDir": "D:/4. 타일 이미지, 영상 RGB/ICONA 아이코나 시리즈/VENICE (ICONA)",
+  "colors": [
+    {
+      "productId": 495,
+      "code": "BT-PD 6336",
+      "name": "FOG",
+      "face": "PD6336 600x600mm/PD6336 600x600mm-1.jpg"
+    }
+  ],
+  "accent": {
+    "onLight": "#5f676e",
+    "onDark": "#c6ced5"
+  },
+  "scene": "PD6336 600x600mm/PD6336 600x600mm空间场景图合.jpg",
+  "sceneCrop": [
+    2539,
+    0,
+    3307,
+    4134
+  ],
+  "cover": {
+    "label": "신규 컬러",
+    "line": "안개처럼 가벼운 라이트 그레이"
+  },
+  "tone": {
+    "label": "톤",
+    "lines": [
+      "화이트보다 깊고,",
+      "그레이보다 <em>가볍게</em>."
+    ],
+    "body": "아이코나의 화이트와 그레이 계열 컬러를 밝은 순서로 놓았습니다.",
+    "order": [
+      "WHITE",
+      "FOG",
+      "TAUPE",
+      "COAL"
+    ]
+  },
+  "space": {
+    "file": "PD6336 600x600mm/PD6336 600x600mm空间场景图合.jpg",
+    "full": true,
+    "crop": [
+      1100,
+      1384,
+      2200,
+      2750
+    ],
+    "label": "공간",
+    "lines": [
+      "밝은 바닥 위로,",
+      "공간이 <em>넓게</em> 열립니다."
+    ],
+    "tag": "공간 이미지",
+    "zoom": 400,
+    "zoomAt": [
+      600,
+      760
+    ]
+  },
+  "family": [
+    {
+      "productId": 447,
+      "code": "BT-PD 6331",
+      "name": "WHITE",
+      "face": "PD6331 600x600mm/PD6331-1.jpg"
+    },
+    {
+      "productId": 446,
+      "code": "BT-PD 6332",
+      "name": "CREAM",
+      "face": "PD6332 600x600mm/PD6332-1.jpg"
+    },
+    {
+      "productId": 497,
+      "code": "BT-PD 6334",
+      "name": "CLAY",
+      "face": "PD6334 600x600mm/PD6334 600x600mm-1.jpg"
+    },
+    {
+      "productId": 496,
+      "code": "BT-PD 6335",
+      "name": "TAUPE",
+      "face": "PD6335 600x600mm/PD6335 600x600mm-1.jpg"
+    },
+    {
+      "productId": 495,
+      "code": "BT-PD 6336",
+      "name": "FOG",
+      "face": "PD6336 600x600mm/PD6336 600x600mm-1.jpg"
+    },
+    {
+      "productId": 498,
+      "code": "BT-PD 6339",
+      "name": "COAL",
+      "face": "PD6339 600x600mm/PD6339 600x600mm-1.jpg"
+    }
+  ],
+  "caption": "_\nICONA FOG\n아이코나 라이트 그레이\n\n안개처럼 가벼운 라이트 그레이 컬러의 포세린 타일입니다.\n2가지 몰드로 만든 무광 표면에 16가지 디자인 프린팅이 더해져, 타일마다 무늬와 텍스처가 다르게 나타납니다.\n\n· 규격 600×600\n· 마감 포세린 무광\n· 포장 1BOX 4pcs / 1.44㎡\n· 품번 BT-PD 6336\n\n제품 문의는 프로필 링크 또는 bathtileco.com\n\n#벳센타일 #타일 #포세린타일 #600x600 #인테리어자재 #아이코나 #몰드타일 #그레이타일"
+}
