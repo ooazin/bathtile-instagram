@@ -814,7 +814,63 @@ function sgSpecSlide() {
   ${logo('logo-white.png')}`, DARK, PAPER);
 }
 
+// Light cover image with the title in ink at the top left.
+function s2CoverSlide() {
+  const { c, title } = single();
+  return page(`<img class="abs" src="cover.jpg" style="left:0;top:0;width:${W}px;height:${H}px">
+  <div class="abs" style="left:64px;top:96px;color:${INK}">
+    <div class="en" style="font-size:18px;font-weight:600">${c.size}</div>
+    <div style="margin-top:18px;font-size:72px;line-height:1;font-weight:400;letter-spacing:-.01em">${title}</div>
+    <div style="margin-top:18px;font-size:26px;font-weight:400">${source.ko} ${c.ko}</div>
+  </div>
+  ${logo('logo-black.png')}`);
+}
+
+// One room, then a wall area marked on it, then the tile face at its own resolution.
+function s2ZoomSlide() {
+  const { label, lines, view, wall, steps } = source.zoom;
+  const top = 340;
+  const roomH = Math.round((952 * view[3]) / view[2]);
+  const k = 952 / view[2];
+  const mark = [64 + (wall[0] - view[0]) * k, top + (wall[1] - view[1]) * k, wall[2] * k, wall[3] * k].map(Math.round);
+  const lowTop = top + roomH + 64;
+  const panel = (src, x, text) => `<div class="abs" style="left:${x}px;top:${lowTop}px"><img src="${src}" style="display:block;width:466px;height:330px;object-fit:cover">
+    <div style="margin-top:12px;font-size:19px;font-weight:500;opacity:.85">${text}</div></div>`;
+  return page(`${edHeader(PAPER)}
+  <div class="abs" style="left:64px;right:64px;top:112px">${edLabel(label, source.accent.onDark)}${edHeadline(lines, source.accent.onDark)}</div>
+  <img class="abs" src="room.jpg" style="left:64px;top:${top}px;width:952px;height:${roomH}px">
+  <div class="abs" style="left:${mark[0]}px;top:${mark[1]}px;width:${mark[2]}px;height:${mark[3]}px;border:2px solid ${PAPER}"></div>
+  <svg class="abs" style="left:0;top:0" width="${W}" height="${H}"><path d="M${mark[0]} ${mark[1] + mark[3]} L64 ${lowTop} M${mark[0] + mark[2]} ${mark[1] + mark[3]} L530 ${lowTop}" stroke="${PAPER}" stroke-width="1.5" opacity=".6" fill="none"/></svg>
+  <div class="abs" style="left:64px;top:${top + roomH + 14}px;font-size:19px;font-weight:500;opacity:.85">${steps[0]}</div>
+  ${panel('wall.jpg', 64, steps[1])}${panel('face-zoom.jpg', 550, steps[2])}
+  ${logo('logo-white.png')}`, DARK, PAPER);
+}
+
+function s2FullSlide() {
+  const { c, title } = single();
+  return page(`<img class="abs" src="full.jpg" style="left:0;top:0;width:${W}px;height:${H}px">
+  <div class="abs en" style="left:64px;bottom:66px;font-size:17px;font-weight:500;color:${source.fullTone === 'dark' ? PAPER : INK}">${title} · ${c.size}</div>
+  ${logo(source.fullTone === 'dark' ? 'logo-white.png' : 'logo-black.png')}`);
+}
+
+// Spec with the whole tile face across the top.
+function s2SpecSlide() {
+  const { c, title } = single();
+  const rows = [['규격', c.size], ['구분·마감', c.finish], ['포장', `1BOX ${c.box}`], ['품번', c.code]]
+    .map(([k, v]) => `<div style="padding:20px 0;border-top:1px solid rgba(244,242,237,.18)"><div style="font-size:19px;font-weight:300;opacity:.75">${k}</div><div style="margin-top:6px;font-size:27px;font-weight:500">${v}</div></div>`).join('');
+  return page(`${edHeader(PAPER)}
+  <img class="abs" src="${c.name}.jpg" style="left:64px;top:120px;width:952px;height:476px;object-fit:cover">
+  <div class="abs" style="left:64px;top:640px">
+    <div style="font-size:56px;font-weight:500;letter-spacing:-.02em">${title}</div>
+    <div style="margin-top:8px;font-size:25px;font-weight:400;opacity:.85">${source.ko} ${c.ko}</div>
+  </div>
+  <div class="abs" style="left:64px;right:64px;top:800px;display:grid;grid-template-columns:1fr 1fr;column-gap:48px">${rows}</div>
+  <div class="abs" style="left:64px;bottom:60px;font-size:24px;line-height:1.5"><span style="font-weight:300;opacity:.8">제품 문의</span><br><span style="font-weight:600">bathtileco.com</span></div>
+  ${logo('logo-white.png')}`, DARK, PAPER);
+}
+
 const TEMPLATES = {
+  singleZoom: () => [s2CoverSlide(), s2ZoomSlide(), s2FullSlide(), s2SpecSlide()],
   single: () => [sgCoverSlide(), sgDetailSlide(), sgFacesSlide(), sgSpaceSlide(), sgSpecSlide()],
   mood: () => source.mood.map((_, i) => moodSlide(i)),
   collectionEditorial: () => [kzCoverSlide(), kzDetailSlide(), kzScenesSlide(), kzSizesSlide(), kzSpecSlide()],

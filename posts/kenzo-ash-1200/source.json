@@ -1,0 +1,27 @@
+{
+  "slug": "kenzo-ash-1200",
+  "template": "singleZoom",
+  "collection": "KENZO",
+  "ko": "겐조",
+  "header": "KENZO ASH 600×1200",
+  "sourceDir": "D:/4. 타일 이미지, 영상 RGB/KENZO",
+  "colors": [
+    { "productId": 490, "code": "BT-612KN05RJ", "name": "ASH", "face": "페턴/612KN05RJ/612KN05RJ_01.jpg" }
+  ],
+  "accent": { "onLight": "#6f6a62", "onDark": "#cfc6b8" },
+  "assets": [
+    { "file": "600X1200/612KN05RJ/墙-612KN05RJ-地-612KN05RJ.jpg", "crop": [2400, 0, 3200, 4000], "out": "cover.jpg" },
+    { "file": "600X1200/612KN05RJ/墙-612KN05RJ-地-612KN05RJ.jpg", "crop": [0, 300, 6667, 3000], "out": "room.jpg", "w": 1904, "h": 857 },
+    { "file": "600X1200/612KN05RJ/墙-612KN05RJ-地-612KN05RJ.jpg", "crop": [2050, 700, 1000, 708], "out": "wall.jpg", "w": 932, "h": 660 },
+    { "file": "페턴/612KN05RJ/612KN05RJ_01.jpg", "crop": [2000, 900, 466, 330], "out": "face-zoom.jpg", "w": 466, "h": 330 },
+    { "file": "600X1200/612KN05RJ/墙-612KN05RJ-地-612KN05RJ (2).jpg", "out": "full.jpg" }
+  ],
+  "zoom": {
+    "label": "멀리서, 가까이서",
+    "lines": ["공간에서 표면까지,", "<em>한 결</em>로 이어집니다."],
+    "view": [0, 300, 6667, 3000],
+    "wall": [2050, 700, 1000, 708],
+    "steps": ["공간", "벽면", "표면"]
+  },
+  "caption": "_\nKENZO ASH 600×1200\n겐조 그레이\n\n멀리서는 차분한 그레이, 가까이서는 잔잔한 돌의 결.\n600×1200 큰 판형의 KENZO ASH가 벽과 바닥을 하나의 흐름으로 이어 줍니다.\n\n· 규격 600×1200\n· 마감 포세린 무광\n· 포장 1BOX 2pcs / 1.44㎡\n· 품번 BT-612KN05RJ\n\n· 제품 상세 : https://bathtileco.com/BT-porcelain600x1200/?idx=490\n\n#벳센타일 #타일 #포세린타일 #600x1200 #인테리어자재 #겐조 #스톤타일 #그레이타일"
+}
