@@ -173,6 +173,10 @@ for (const f of source.family ?? []) {
 for (const n of source.variations?.picks ?? []) {
   await resize(path.join(source.sourceDir, source.variations.file.replace('{n}', n)), `variation-${n}.jpg`, 600);
 }
+for (const c of colors) {
+  if (c.detail) await resize(path.join(source.sourceDir, c.detail), `${c.name}-detail.jpg`, 900);
+  if (c.scene) await resize(path.join(source.sourceDir, c.scene), `${c.name}-scene.jpg`, 1000);
+}
 if (source.space) await cropRegion(path.join(source.sourceDir, source.space.file), 'space.jpg', source.space.crop, W, source.space.full ? H : 620);
 // The zoom circle shows the tile face at its own resolution, not an enlargement.
 if (source.space?.zoom) await crop(path.join(source.sourceDir, colors[0].face), 'zoom.jpg', source.space.zoom, source.space.zoom);
@@ -200,6 +204,26 @@ if (source.compare) {
 }
 for (const [i, file] of (source.variants?.faces ?? []).entries()) {
   await resize(path.join(source.sourceDir, file), `variant-${i}.jpg`, 900);
+}
+
+// Mood images: a given crop, or the largest centred area of the target shape.
+async function moodCrop(entry, outName, width, height) {
+  const file = path.resolve(source.sourceDir, entry.file);
+  let rect = entry.crop;
+  if (!rect) {
+    const img = await loadImage(fs.readFileSync(file));
+    const w = Math.min(img.width, Math.round((img.height * width) / height));
+    const h = Math.round((w * height) / width);
+    rect = [Math.round((img.width - w) / 2), Math.round((img.height - h) / 2), w, h];
+  }
+  await cropRegion(file, outName, rect, width, height);
+}
+for (const [i, m] of (source.mood ?? []).entries()) {
+  if (m.split) {
+    for (const [k, part] of m.split.entries()) await moodCrop(part, `mood-${i}-${k}.jpg`, W, H / 2);
+  } else {
+    await moodCrop(m, `mood-${i}.jpg`, W, H);
+  }
 }
 
 const assetUrl = (file) => pathToFileURL(path.resolve('assets', file)).href;
@@ -470,7 +494,7 @@ function printsMoldsSlide() {
 // Editorial series: a short accent rule marks each section, tile-square markers point out features.
 function edHeader(color) {
   return `<div class="abs en" style="left:64px;top:58px;display:flex;align-items:center;gap:14px;font-size:18px;font-weight:600;color:${color}">
-    <span style="width:28px;height:2px;background:currentColor"></span>${source.collection} ${colors[0].name}</div>`;
+    <span style="width:28px;height:2px;background:currentColor"></span>${source.header ?? `${source.collection} ${colors[0].name}`}</div>`;
 }
 
 function edHeadline([light, bold], accent) {
@@ -568,6 +592,80 @@ function edSpaceZoomSlide() {
   ${logo('logo-black.png')}`);
 }
 
+// Collection cover: a dark room image with the colour range along the bottom.
+function kzCoverSlide() {
+  const chips = colors.map((c) => `<div style="width:104px"><div style="height:104px;background:url(${c.name}.jpg) center/cover;box-shadow:0 0 0 1px rgba(244,242,237,.35)"></div>
+    <div style="margin-top:10px;font-size:17px;font-weight:600">${c.name}</div></div>`).join('');
+  return page(`<img class="abs" src="scene.jpg" style="left:0;top:0;width:${W}px;height:${H}px">
+  ${edHeader(PAPER)}
+  <div class="abs" style="left:64px;right:64px;top:132px;color:${PAPER}">
+    ${edLabel(source.cover.label, PAPER)}
+    <div style="font-size:96px;line-height:1;font-weight:500;letter-spacing:-.02em">${source.collection}</div>
+    <div style="margin-top:22px;font-size:30px;font-weight:400">${source.cover.line}</div>
+  </div>
+  <div class="abs" style="left:64px;bottom:64px;display:flex;gap:14px;color:${PAPER}">${chips}</div>
+  ${logo('logo-white.png')}`);
+}
+
+// Close-up photographs of the real tiles, one per colour.
+function kzDetailSlide() {
+  const { label, lines, body } = source.detail;
+  const size = 420;
+  const cells = colors.map((c) => `<div><img src="${c.name}-detail.jpg" style="display:block;width:${size}px;height:${size}px;object-fit:cover">
+    <div style="margin-top:10px;display:flex;align-items:center;gap:10px;font-size:19px;font-weight:600">${edSquare(source.accent.onLight, 12)}${c.name}<span style="font-weight:400">${c.ko}</span></div></div>`).join('');
+  return page(`${edHeader(INK)}
+  <div class="abs" style="left:64px;right:64px;top:112px">${edLabel(label, source.accent.onLight)}${edHeadline(lines, source.accent.onLight)}
+    <div style="margin-top:12px;font-size:22px;font-weight:400">${body}</div></div>
+  <div class="abs" style="left:64px;top:392px;display:grid;grid-template-columns:${size}px ${size}px;gap:14px 12px">${cells}</div>
+  ${logo('logo-black.png')}`);
+}
+
+// One room image per colour.
+function kzScenesSlide() {
+  const { label, lines, tag } = source.scenes;
+  const w = 470;
+  const h = 420;
+  const cells = colors.map((c) => `<div style="position:relative"><img src="${c.name}-scene.jpg" style="display:block;width:${w}px;height:${h}px;object-fit:cover">
+    <div class="abs" style="left:14px;bottom:12px;background:rgba(29,28,26,.6);padding:5px 12px;border-radius:14px;font-size:17px;font-weight:600">${c.name}</div></div>`).join('');
+  return page(`${edHeader(PAPER)}
+  <div class="abs" style="left:64px;right:64px;top:112px">${edLabel(label, source.accent.onDark)}${edHeadline(lines, source.accent.onDark)}</div>
+  <div class="abs" style="left:64px;top:366px;display:grid;grid-template-columns:${w}px ${w}px;gap:12px">${cells}</div>
+  <div class="abs" style="left:64px;top:${366 + h * 2 + 28}px;font-size:18px;font-weight:500;opacity:.7">${tag}</div>
+  ${logo('logo-white.png')}`, DARK, PAPER);
+}
+
+// Both sizes per colour on one scale, with their codes.
+function kzSizesSlide() {
+  const { label, lines } = source.sizes;
+  const unit = 170;
+  const row = (c) => `<div style="display:flex;align-items:flex-end;gap:22px;padding:18px 0;border-top:1px solid rgba(29,28,26,.14)">
+    <div style="width:190px;padding-bottom:4px"><div style="font-size:26px;font-weight:700">${c.name}</div><div style="margin-top:4px;font-size:19px">${c.ko}</div></div>
+    <div><img src="${c.name}.jpg" style="display:block;width:${unit}px;height:${unit}px;object-fit:cover"><div style="margin-top:8px;font-size:16px">${c.size} · ${c.code}</div></div>
+    <div><img src="${c.name}-large.jpg" style="display:block;width:${unit * 2}px;height:${unit}px;object-fit:cover"><div style="margin-top:8px;font-size:16px">${c.large.size} · ${c.large.code}</div></div>
+  </div>`;
+  return page(`${edHeader(INK)}
+  <div class="abs" style="left:64px;right:64px;top:112px">${edLabel(label, source.accent.onLight)}${edHeadline(lines, source.accent.onLight)}</div>
+  <div class="abs" style="left:64px;right:64px;top:330px">${colors.map(row).join('')}</div>
+  ${logo('logo-black.png')}`);
+}
+
+function kzSpecSlide() {
+  const c = colors[0];
+  const rows = [['구분·마감', c.finish], [c.size, `1BOX ${c.box}`], [c.large.size, `1BOX ${c.large.box}`], ['컬러', colors.map((k) => k.name).join(' · ')]]
+    .map(([k, v]) => `<div style="display:flex;padding:24px 0;border-bottom:1px solid rgba(244,242,237,.18);font-size:27px"><div style="width:240px;font-weight:300;opacity:.8">${k}</div><div style="font-weight:500">${v}</div></div>`).join('');
+  return page(`${edHeader(PAPER)}
+  <div class="abs" style="left:64px;right:64px;top:132px">
+    ${edLabel('제품 사양', source.accent.onDark)}
+    <div style="font-size:64px;font-weight:500;letter-spacing:-.02em">${source.collection}</div>
+    <div style="margin-top:8px;font-size:27px;font-weight:400;opacity:.85">${source.ko}</div>
+    <div style="margin-top:48px;border-top:1px solid rgba(244,242,237,.18)">${rows}</div>
+    <div style="margin-top:56px;display:flex;gap:16px">${colors.map((k) => `<div style="flex:1"><div style="height:150px;background:url(${k.name}-large.jpg) center/cover"></div>
+      <div style="margin-top:10px;font-size:19px;font-weight:600">${k.name}<span style="margin-left:8px;font-weight:300;opacity:.8">${k.ko}</span></div></div>`).join('')}</div>
+  </div>
+  <div class="abs" style="left:64px;bottom:60px;font-size:24px;line-height:1.5"><span style="font-weight:300;opacity:.8">제품 문의</span><br><span style="font-weight:600">bathtileco.com</span></div>
+  ${logo('logo-white.png')}`, DARK, PAPER);
+}
+
 function edSpecSlide() {
   const c = colors[0];
   const rows = [['규격', c.size], ['구분·마감', c.finish], ['포장', `1BOX ${c.box}`], ['품번', c.code]]
@@ -633,7 +731,30 @@ function sizesSpecSlide() {
   ${logo('logo-white.png')}`, DARK, PAPER);
 }
 
+// Image-led slides with as little type as possible: a small spaced title, or just a colour name.
+function moodSlide(i) {
+  const m = source.mood[i];
+  const ink = m.tone === 'light' ? INK : PAPER;
+  const shade = m.tone === 'light' ? '' : '<div class="abs" style="left:0;top:0;right:0;height:420px;background:linear-gradient(rgba(0,0,0,.28),rgba(0,0,0,0))"></div>';
+  const title = m.title || m.line ? `<div class="abs" style="left:0;right:0;top:${m.titleTop ?? 120}px;text-align:center;color:${ink}">
+    ${m.title ? `<div style="font-size:54px;font-weight:300;letter-spacing:.32em;padding-left:.32em">${m.title}</div>` : ''}
+    ${m.line ? `<div style="margin-top:${m.title ? 20 : 0}px;font-size:${m.title ? 22 : 30}px;font-weight:${m.title ? 400 : 300};letter-spacing:.06em">${m.line}</div>` : ''}</div>` : '';
+  const tag = (text, bottom) => `<div class="abs en" style="left:64px;bottom:${bottom}px;font-size:17px;font-weight:500;color:${ink}">${text}</div>`;
+  const label = m.label ? tag(m.label, 66) : '';
+  const img = (src, top, height, filter) => `<img class="abs" src="${src}" style="left:0;top:${top}px;width:${W}px;height:${height}px;${filter ? `filter:${filter}` : ''}">`;
+  const images = m.split
+    ? m.split.map((p, k) => img(`mood-${i}-${k}.jpg`, (k * H) / 2, H / 2, p.filter)).join('')
+      + `<div class="abs" style="left:0;right:0;top:${H / 2 - 1}px;height:2px;background:${PAPER}"></div>`
+      + m.split.map((p, k) => (p.label ? tag(p.label, k === 0 ? H / 2 + 30 : 66) : '')).join('')
+    : img(`mood-${i}.jpg`, 0, H, m.filter);
+  return page(`${images}
+  ${m.title || m.line ? shade : ''}${title}${label}
+  ${logo(m.tone === 'light' ? 'logo-black.png' : 'logo-white.png')}`);
+}
+
 const TEMPLATES = {
+  mood: () => source.mood.map((_, i) => moodSlide(i)),
+  collectionEditorial: () => [kzCoverSlide(), kzDetailSlide(), kzScenesSlide(), kzSizesSlide(), kzSpecSlide()],
   editorialTone: () => [edCoverSlide(), edToneSlide(), edSpaceZoomSlide(), edSpecSlide()],
   editorialPrints: () => [edCoverSlide(), edPrintsSlide(), edSpaceSlide(), edSpecSlide()],
   editorial: () => [edCoverSlide(), edSurfaceSlide(), edSpaceSlide(), edSpecSlide()],
