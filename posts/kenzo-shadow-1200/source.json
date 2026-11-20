@@ -1,0 +1,40 @@
+{
+  "slug": "kenzo-shadow-1200",
+  "template": "single",
+  "collection": "KENZO",
+  "ko": "겐조",
+  "header": "KENZO SHADOW 600×1200",
+  "sourceDir": "D:/4. 타일 이미지, 영상 RGB/KENZO",
+  "colors": [
+    { "productId": 489, "code": "BT-612KN08RJ", "name": "SHADOW", "face": "페턴/612KN08RJ/612KN08RJ_01.jpg" }
+  ],
+  "accent": { "onLight": "#6f6a62", "onDark": "#cfc6b8" },
+  "assets": [
+    { "file": "600X1200/612KN08RJ/墙-612KN08RJ.jpg", "crop": [0, 312, 3750, 4688], "out": "cover.jpg" },
+    { "file": "겐조 디테일-쉐도우.jpg", "out": "detail.jpg", "w": 1904, "h": 1680 },
+    { "file": "600X1200/612KN08RJ/墙-612KN08RJ-地-612KN08RJ.jpg", "out": "space-wide.jpg", "w": 2160, "h": 1800 },
+    { "file": "페턴/612KN08RJ/612KN08RJ_02.jpg", "out": "face-2.jpg", "w": 932, "h": 466 },
+    { "file": "페턴/612KN08RJ/612KN08RJ_05.jpg", "out": "face-5.jpg", "w": 932, "h": 466 },
+    { "file": "페턴/612KN08RJ/612KN08RJ_08.jpg", "out": "face-8.jpg", "w": 932, "h": 466 },
+    { "file": "페턴/612KN08RJ/612KN08RJ_11.jpg", "out": "face-11.jpg", "w": 932, "h": 466 },
+    { "file": "페턴/612KN08RJ/612KN08RJ_14.jpg", "out": "face-14.jpg", "w": 932, "h": 466 },
+    { "file": "페턴/612KN08RJ/612KN08RJ_17.jpg", "out": "face-17.jpg", "w": 932, "h": 466 }
+  ],
+  "detail": {
+    "label": "실물 디테일",
+    "lines": ["깊은 블랙 위로", "<em>잔잔한 결</em>이 흐릅니다."],
+    "body": "KENZO SHADOW 실물 타일 사진입니다."
+  },
+  "faces": {
+    "label": "페이스",
+    "lines": ["한 장 한 장,", "<em>다른 결</em>."],
+    "body": "같은 품번 안에서도 페이스마다 결의 흐름이 달라, 넓은 면에 깔아도 단조롭지 않습니다.",
+    "picks": [2, 5, 8, 11, 14, 17]
+  },
+  "spaceWide": {
+    "label": "공간",
+    "lines": ["벽과 바닥을 하나로,", "<em>600×1200</em>의 넓은 면."],
+    "tag": "KENZO SHADOW 600×1200 · 벽, 바닥 시공 이미지"
+  },
+  "caption": "_\nKENZO SHADOW 600×1200\n겐조 블랙\n\n깊고 차분한 블랙 위로 잔잔한 돌의 결이 흐르는 KENZO SHADOW입니다.\n600×1200 큰 판형으로 벽과 바닥을 넓고 고요하게 채웁니다.\n\n· 규격 600×1200\n· 마감 포세린 무광\n· 포장 1BOX 2pcs / 1.44㎡\n· 품번 BT-612KN08RJ\n\n· 제품 상세 : https://bathtileco.com/BT-porcelain600x1200/?idx=489\n\n#벳센타일 #타일 #포세린타일 #600x1200 #인테리어자재 #겐조 #스톤타일 #블랙타일"
+}

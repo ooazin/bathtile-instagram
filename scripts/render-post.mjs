@@ -218,6 +218,7 @@ async function moodCrop(entry, outName, width, height) {
   }
   await cropRegion(file, outName, rect, width, height);
 }
+for (const a of source.assets ?? []) await moodCrop(a, a.out, a.w ?? W, a.h ?? H);
 for (const [i, m] of (source.mood ?? []).entries()) {
   if (m.split) {
     for (const [k, part] of m.split.entries()) await moodCrop(part, `mood-${i}-${k}.jpg`, W, H / 2);
@@ -752,7 +753,69 @@ function moodSlide(i) {
   ${logo(m.tone === 'light' ? 'logo-black.png' : 'logo-white.png')}`);
 }
 
+// Single-product feed: one colour in one size.
+const single = () => ({ c: colors[0], title: `${source.collection} ${colors[0].name}` });
+
+function sgCoverSlide() {
+  const { c, title } = single();
+  return page(`<img class="abs" src="cover.jpg" style="left:0;top:0;width:${W}px;height:${H}px">
+  <div class="abs" style="left:0;top:0;right:0;height:460px;background:linear-gradient(rgba(0,0,0,.32),rgba(0,0,0,0))"></div>
+  <div class="abs" style="left:64px;top:96px;color:${PAPER}">
+    <div class="en" style="font-size:18px;font-weight:600">${c.size}</div>
+    <div style="margin-top:18px;font-size:72px;line-height:1;font-weight:400;letter-spacing:-.01em">${title}</div>
+    <div style="margin-top:18px;font-size:26px;font-weight:400">${source.ko} ${c.ko}</div>
+  </div>
+  ${logo('logo-white.png')}`);
+}
+
+function sgDetailSlide() {
+  const { label, lines, body } = source.detail;
+  return page(`${edHeader(PAPER)}
+  <div class="abs" style="left:64px;right:64px;top:112px">${edLabel(label, source.accent.onDark)}${edHeadline(lines, source.accent.onDark)}
+    <div style="margin-top:12px;font-size:22px;font-weight:400;opacity:.8">${body}</div></div>
+  <img class="abs" src="detail.jpg" style="left:64px;top:380px;width:952px;height:840px;object-fit:cover">
+  ${logo('logo-white.png')}`, DARK, PAPER);
+}
+
+function sgFacesSlide() {
+  const { label, lines, body, picks } = source.faces;
+  const w = 466;
+  const h = 233;
+  const rows = Math.ceil(picks.length / 2);
+  const cells = picks.map((n) => `<img src="face-${n}.jpg" style="display:block;width:${w}px;height:${h}px;object-fit:cover">`).join('');
+  return page(`${edHeader(PAPER)}
+  <div class="abs" style="left:64px;right:64px;top:112px">${edLabel(label, source.accent.onDark)}${edHeadline(lines, source.accent.onDark)}</div>
+  <div class="abs" style="left:64px;top:350px;display:grid;grid-template-columns:${w}px ${w}px;gap:20px">${cells}</div>
+  <div class="abs" style="left:64px;right:220px;top:${350 + rows * (h + 20) + 24}px;font-size:22px;line-height:1.6;font-weight:400">${body}</div>
+  ${logo('logo-white.png')}`, DARK, PAPER);
+}
+
+function sgSpaceSlide() {
+  const { label, lines, tag } = source.spaceWide;
+  return page(`<img class="abs" src="space-wide.jpg" style="left:0;top:0;width:${W}px;height:900px">
+  <div class="abs" style="left:64px;right:64px;top:960px">${edLabel(label, source.accent.onDark)}${edHeadline(lines, source.accent.onDark)}
+    <div style="margin-top:16px;font-size:20px;font-weight:500;opacity:.7">${tag}</div></div>
+  ${logo('logo-white.png')}`, DARK, PAPER);
+}
+
+function sgSpecSlide() {
+  const { c, title } = single();
+  const rows = [['규격', c.size], ['구분·마감', c.finish], ['포장', `1BOX ${c.box}`], ['품번', c.code]]
+    .map(([k, v]) => `<div style="display:flex;padding:22px 0;border-bottom:1px solid rgba(244,242,237,.18);font-size:26px"><div style="width:190px;font-weight:300;opacity:.8">${k}</div><div style="font-weight:500">${v}</div></div>`).join('');
+  return page(`${edHeader(PAPER)}
+  <div class="abs" style="left:64px;top:132px">
+    ${edLabel('제품 사양', source.accent.onDark)}
+    <div style="font-size:60px;font-weight:500;letter-spacing:-.02em">${title}</div>
+    <div style="margin-top:8px;font-size:26px;font-weight:400">${source.ko} ${c.ko}</div>
+  </div>
+  <img class="abs" src="${c.name}.jpg" style="left:64px;top:400px;width:300px;height:600px;object-fit:cover">
+  <div class="abs" style="left:420px;right:64px;top:400px;border-top:1px solid rgba(244,242,237,.18)">${rows}</div>
+  <div class="abs" style="left:64px;bottom:60px;font-size:24px;line-height:1.5"><span style="font-weight:300;opacity:.8">제품 문의</span><br><span style="font-weight:600">bathtileco.com</span></div>
+  ${logo('logo-white.png')}`, DARK, PAPER);
+}
+
 const TEMPLATES = {
+  single: () => [sgCoverSlide(), sgDetailSlide(), sgFacesSlide(), sgSpaceSlide(), sgSpecSlide()],
   mood: () => source.mood.map((_, i) => moodSlide(i)),
   collectionEditorial: () => [kzCoverSlide(), kzDetailSlide(), kzScenesSlide(), kzSizesSlide(), kzSpecSlide()],
   editorialTone: () => [edCoverSlide(), edToneSlide(), edSpaceZoomSlide(), edSpecSlide()],
