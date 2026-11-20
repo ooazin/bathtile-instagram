@@ -1,0 +1,101 @@
+{
+  "slug": "kenzo",
+  "template": "collectionEditorial",
+  "collection": "KENZO",
+  "ko": "겐조",
+  "header": "KENZO Collection",
+  "sourceDir": "D:/4. 타일 이미지, 영상 RGB/KENZO",
+  "colors": [
+    {
+      "productId": 488,
+      "code": "BT-60KN00RJ",
+      "name": "CLOUD",
+      "face": "페턴/60KN00RJ/60KN00RJ (1).jpg",
+      "detail": "겐조 디테일-클라우드.jpg",
+      "scene": "600X1200/612KN00RJ/墙-地-612KN00RJ (1).jpg",
+      "large": {
+        "productId": 492,
+        "code": "BT-612KN00RJ",
+        "face": "페턴/612KN00RJ/612KN00RJ_01.jpg"
+      }
+    },
+    {
+      "productId": 487,
+      "code": "BT-60KN02RJ",
+      "name": "SAND",
+      "face": "페턴/60KN02RJ/60KN02RJ_01.jpg",
+      "detail": "겐조 디테일-샌드.jpg",
+      "scene": "600X1200/612KN02RJ/墙-612KN02RJ-地-612KN02RJ.jpg",
+      "large": {
+        "productId": 491,
+        "code": "BT-612KN02RJ",
+        "face": "페턴/612KN02RJ/612KN02RJ_01.jpg"
+      }
+    },
+    {
+      "productId": 486,
+      "code": "BT-60KN05RJ",
+      "name": "ASH",
+      "face": "페턴/60KN05RJ/60KN05RJ_01.jpg",
+      "detail": "겐조 디테일-에쉬.jpg",
+      "scene": "600X600/60KN05RJ/墙-60KN05RJ-地-60KN05RJ.jpg",
+      "large": {
+        "productId": 490,
+        "code": "BT-612KN05RJ",
+        "face": "페턴/612KN05RJ/612KN05RJ_01.jpg"
+      }
+    },
+    {
+      "productId": 485,
+      "code": "BT-60KN08RJ",
+      "name": "SHADOW",
+      "face": "페턴/60KN08RJ/60KN08RJ_01.jpg",
+      "detail": "겐조 디테일-쉐도우.jpg",
+      "scene": "600X600/60KN08RJ/墙-60KN08-地-60KN08RJ.jpg",
+      "large": {
+        "productId": 489,
+        "code": "BT-612KN08RJ",
+        "face": "페턴/612KN08RJ/612KN08RJ_01.jpg"
+      }
+    }
+  ],
+  "accent": {
+    "onLight": "#6f6a62",
+    "onDark": "#cfc6b8"
+  },
+  "scene": "600X1200/612KN08RJ/墙-612KN08RJ-地-612KN08RJ.jpg",
+  "sceneCrop": [
+    1960,
+    0,
+    2830,
+    3538
+  ],
+  "cover": {
+    "label": "4가지 컬러 · 2가지 규격",
+    "line": "시간이 켜켜이 쌓인 라임스톤의 질감"
+  },
+  "detail": {
+    "label": "실물 디테일",
+    "lines": [
+      "고요한 표면 위,",
+      "<em>시간</em>이 남긴 흔적."
+    ],
+    "body": "KENZO 4가지 컬러의 실물 타일 사진입니다."
+  },
+  "scenes": {
+    "label": "공간",
+    "lines": [
+      "바닥부터 벽까지,",
+      "컬러마다 <em>다른 분위기</em>."
+    ],
+    "tag": "공간 이미지"
+  },
+  "sizes": {
+    "label": "규격",
+    "lines": [
+      "모든 컬러,",
+      "<em>두 가지</em> 규격으로."
+    ]
+  },
+  "caption": "_\nKENZO Collection\n겐조 컬렉션\n\n오랜 시간이 켜켜이 쌓인 라임스톤의 질감을 담은 포세린 타일입니다.\nCLOUD, SAND, ASH, SHADOW 4가지 컬러를 600×600과 600×1200 두 가지 규격으로 만날 수 있습니다.\n\n· 규격 600×600, 600×1200\n· 마감 포세린 무광\n· 포장 600×600 1BOX 4pcs / 1.44㎡, 600×1200 1BOX 2pcs / 1.44㎡\n\n· 제품 상세\nKENZO CLOUD 600×600 : https://bathtileco.com/BT-porcelain600x600/?idx=488\nKENZO CLOUD 600×1200 : https://bathtileco.com/BT-porcelain600x1200/?idx=492\nKENZO SAND 600×600 : https://bathtileco.com/BT-porcelain600x600/?idx=487\nKENZO SAND 600×1200 : https://bathtileco.com/BT-porcelain600x1200/?idx=491\nKENZO ASH 600×600 : https://bathtileco.com/BT-porcelain600x600/?idx=486\nKENZO ASH 600×1200 : https://bathtileco.com/BT-porcelain600x1200/?idx=490\nKENZO SHADOW 600×600 : https://bathtileco.com/BT-porcelain600x600/?idx=485\nKENZO SHADOW 600×1200 : https://bathtileco.com/BT-porcelain600x1200/?idx=489\n\n#벳센타일 #타일 #포세린타일 #600x600 #600x1200 #인테리어자재 #겐조 #스톤타일"
+}
