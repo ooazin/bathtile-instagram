@@ -1,0 +1,143 @@
+{
+  "slug": "kenzo-sand-1200",
+  "template": "singleMaterial",
+  "collection": "KENZO",
+  "ko": "겐조",
+  "header": "KENZO SAND 600×1200",
+  "sourceDir": "D:/4. 타일 이미지, 영상 RGB/KENZO",
+  "colors": [
+    {
+      "productId": 491,
+      "code": "BT-612KN02RJ",
+      "name": "SAND",
+      "face": "페턴/612KN02RJ/612KN02RJ_01.jpg"
+    }
+  ],
+  "accent": {
+    "onLight": "#6f6a62",
+    "onDark": "#d8c9ad"
+  },
+  "assets": [
+    {
+      "file": "600X1200/612KN02RJ/墙-612KN02RJ-地-612KN02RJ(2).jpg",
+      "crop": [
+        520,
+        420,
+        2422,
+        3027
+      ],
+      "out": "cover.jpg"
+    },
+    {
+      "file": "600X1200/612KN02RJ/地-612KN02RJ.jpg",
+      "crop": [
+        500,
+        0,
+        4000,
+        5000
+      ],
+      "out": "full.jpg"
+    },
+    {
+      "file": "600X1200/612KN02RJ/墙-612KN02RJ-地-612KN02RJ.jpg",
+      "crop": [
+        20,
+        800,
+        360,
+        360
+      ],
+      "out": "mat-0.jpg",
+      "w": 504,
+      "h": 504
+    },
+    {
+      "file": "600X1200/612KN02RJ/墙-612KN02RJ-地-612KN02RJ.jpg",
+      "crop": [
+        1500,
+        2400,
+        500,
+        500
+      ],
+      "out": "mat-1.jpg",
+      "w": 504,
+      "h": 504
+    },
+    {
+      "file": "600X1200/612KN02RJ/墙-612KN02RJ-地-612KN02RJ(2).jpg",
+      "crop": [
+        600,
+        2000,
+        600,
+        600
+      ],
+      "out": "mat-2.jpg",
+      "w": 504,
+      "h": 504
+    },
+    {
+      "file": "600X1200/612KN02RJ/墙-612KN02RJ-地-612KN02RJ.jpg",
+      "crop": [
+        3100,
+        2200,
+        450,
+        450
+      ],
+      "out": "mat-3.jpg",
+      "w": 504,
+      "h": 504
+    },
+    {
+      "file": "600X1200/612KN02RJ/墙-612KN02RJ-地-612KN02RJ.jpg",
+      "crop": [
+        420,
+        2600,
+        300,
+        300
+      ],
+      "out": "mat-4.jpg",
+      "w": 504,
+      "h": 504
+    },
+    {
+      "file": "600X1200/612KN02RJ/墙-612KN02RJ-地-612KN02RJ(2).jpg",
+      "crop": [
+        0,
+        600,
+        500,
+        500
+      ],
+      "out": "mat-5.jpg",
+      "w": 504,
+      "h": 504
+    }
+  ],
+  "materials": {
+    "label": "어울리는 소재",
+    "lines": [
+      "따뜻한 아이보리 위로,",
+      "<em>자연스러운</em> 소재들."
+    ],
+    "body": "패브릭, 식물, 대리석, 블랙 스틸까지. 부드러운 아이보리 바탕이 다양한 소재를 편안하게 받쳐 줍니다.",
+    "chips": [
+      {
+        "label": "리넨"
+      },
+      {
+        "label": "부클레"
+      },
+      {
+        "label": "그린"
+      },
+      {
+        "label": "마블"
+      },
+      {
+        "label": "샌드 톤 오브제"
+      },
+      {
+        "label": "블랙 스틸 선반"
+      }
+    ]
+  },
+  "caption": "_\nKENZO SAND 600×1200\n겐조 아이보리\n\n따뜻한 아이보리 바탕에 잔잔한 돌의 결이 스며든 KENZO SAND입니다.\n리넨, 패브릭, 식물처럼 자연스러운 소재와 편안하게 어우러집니다.\n\n· 규격 600×1200\n· 마감 포세린 무광\n· 포장 1BOX 2pcs / 1.44㎡\n· 품번 BT-612KN02RJ\n\n· 제품 상세 : https://bathtileco.com/BT-porcelain600x1200/?idx=491\n\n#벳센타일 #타일 #포세린타일 #600x1200 #인테리어자재 #겐조 #스톤타일 #아이보리타일"
+}

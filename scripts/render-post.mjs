@@ -869,7 +869,23 @@ function s2SpecSlide() {
   ${logo('logo-white.png')}`, DARK, PAPER);
 }
 
+// Material board: the tile face standing beside materials cropped from its own room images.
+function matSlide() {
+  const { label, lines, body, chips } = source.materials;
+  const { c, title } = single();
+  const chip = (m, i) => `<div style="position:relative"><img src="mat-${i}.jpg" style="display:block;width:252px;height:252px;object-fit:cover">
+    <div class="abs" style="left:10px;bottom:10px;background:rgba(29,28,26,.55);padding:4px 10px;border-radius:12px;font-size:16px;font-weight:600">${m.label}</div></div>`;
+  return page(`${edHeader(PAPER)}
+  <div class="abs" style="left:64px;right:64px;top:112px">${edLabel(label, source.accent.onDark)}${edHeadline(lines, source.accent.onDark)}</div>
+  <div class="abs" style="left:64px;top:340px"><div style="position:relative;width:400px;height:800px;overflow:hidden"><img src="${c.name}.jpg" style="position:absolute;left:-200px;top:200px;width:800px;height:400px;transform:rotate(90deg)"></div>
+    <div style="margin-top:12px;font-size:19px;font-weight:600">${title}<span style="margin-left:8px;font-weight:400;opacity:.8">${c.size}</span></div></div>
+  <div class="abs" style="left:488px;top:340px;display:grid;grid-template-columns:252px 252px;gap:24px">${chips.map(chip).join('')}</div>
+  <div class="abs" style="left:488px;right:64px;top:1180px;font-size:20px;line-height:1.55;opacity:.85">${body}</div>
+  ${logo('logo-white.png')}`, DARK, PAPER);
+}
+
 const TEMPLATES = {
+  singleMaterial: () => [s2CoverSlide(), matSlide(), s2FullSlide(), s2SpecSlide()],
   singleZoom: () => [s2CoverSlide(), s2ZoomSlide(), s2FullSlide(), s2SpecSlide()],
   single: () => [sgCoverSlide(), sgDetailSlide(), sgFacesSlide(), sgSpaceSlide(), sgSpecSlide()],
   mood: () => source.mood.map((_, i) => moodSlide(i)),
