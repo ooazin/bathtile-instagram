@@ -808,7 +808,9 @@ function sgSpecSlide() {
     <div style="font-size:60px;font-weight:500;letter-spacing:-.02em">${title}</div>
     <div style="margin-top:8px;font-size:26px;font-weight:400">${source.ko} ${c.ko}</div>
   </div>
-  <img class="abs" src="${c.name}.jpg" style="left:64px;top:400px;width:300px;height:600px;object-fit:cover">
+  ${c.size === '600×600'
+    ? `<img class="abs" src="${c.name}.jpg" style="left:64px;top:400px;width:300px;height:300px;object-fit:cover">`
+    : `<div class="abs" style="left:64px;top:400px">${upright(`${c.name}.jpg`, 300, 600)}</div>`}
   <div class="abs" style="left:420px;right:64px;top:400px;border-top:1px solid rgba(244,242,237,.18)">${rows}</div>
   <div class="abs" style="left:64px;bottom:60px;font-size:24px;line-height:1.5"><span style="font-weight:300;opacity:.8">제품 문의</span><br><span style="font-weight:600">bathtileco.com</span></div>
   ${logo('logo-white.png')}`, DARK, PAPER);
@@ -897,7 +899,32 @@ function stripsSlide() {
   ${logo('logo-white.png')}`, DARK, PAPER);
 }
 
+// The same colour in both sizes on one scale, with a short note on where each fits.
+function sizeCompareSlide() {
+  const { label, lines, notes } = source.sizeCompare;
+  const { c } = single();
+  const u = 330;
+  const col = (tile, size, note, box, own) => `<div style="width:${u}px">
+    <div style="height:${u * 2}px;display:flex;align-items:flex-end">${tile}</div>
+    <div style="margin-top:20px;font-size:30px;font-weight:${own ? 600 : 400}">${size}</div>
+    <div style="margin-top:8px;font-size:19px;opacity:.75">1BOX ${box}</div>
+    <div style="margin-top:14px;font-size:21px;line-height:1.5;opacity:${own ? 1 : 0.8}">${note}</div></div>`;
+  return page(`${edHeader(PAPER)}
+  <div class="abs" style="left:64px;right:64px;top:112px">${edLabel(label, source.accent.onDark)}${edHeadline(lines, source.accent.onDark)}</div>
+  <div class="abs" style="left:64px;top:340px;display:flex;gap:110px">
+    ${col(`<img src="${c.name}.jpg" style="display:block;width:${u}px;height:${u}px;object-fit:cover">`, c.size, notes[0], c.box, true)}
+    ${col(upright(`${c.name}-large.jpg`, u, u * 2, 'opacity:.6'), c.large.size, notes[1], c.large.box, false)}
+  </div>
+  ${logo('logo-white.png')}`, DARK, PAPER);
+}
+
+// A 600×1200 face is stored landscape, so it is turned upright here without cropping.
+function upright(src, w, h, style = '') {
+  return `<div style="position:relative;width:${w}px;height:${h}px;overflow:hidden;${style}"><img src="${src}" style="position:absolute;left:${(w - h) / 2}px;top:${(h - w) / 2}px;width:${h}px;height:${w}px;transform:rotate(90deg)"></div>`;
+}
+
 const TEMPLATES = {
+  singleVideo: () => [s2FullSlide(), sizeCompareSlide(), sgSpecSlide()],
   singleStrips: () => [s2CoverSlide(), stripsSlide(), s2FullSlide(), sgSpecSlide()],
   singleMaterial: () => [s2CoverSlide(), matSlide(), s2FullSlide(), s2SpecSlide()],
   singleZoom: () => [s2CoverSlide(), s2ZoomSlide(), s2FullSlide(), s2SpecSlide()],
@@ -928,6 +955,11 @@ for (const [i, html] of slides.entries()) {
   images.push(`images/${name}`);
 }
 await browser.close();
+if (source.video) {
+  const { renderVideo } = await import('./render-video.mjs');
+  await renderVideo(source.video, source.sourceDir, path.join(outDir, '00.mp4'));
+  images.unshift('images/00.mp4');
+}
 
 // Re-rendering resets a post to draft, so changed images always need a fresh approval.
 const postPath = path.join(postDir, 'post.json');

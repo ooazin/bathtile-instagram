@@ -20,7 +20,7 @@ export function validatePost(post, postDir) {
     errors.push(`carousel needs 2-${MAX_SLIDES} images`);
   }
   for (const image of post.images ?? []) {
-    if (!/\.jpe?g$/i.test(image)) errors.push(`${image} is not a JPEG`);
+    if (!/\.(jpe?g|mp4)$/i.test(image)) errors.push(`${image} is not a JPEG or MP4`);
     if (!fs.existsSync(path.join(postDir, image))) errors.push(`${image} is missing`);
   }
   if (Number.isNaN(Date.parse(post.scheduled_at))) errors.push('scheduled_at is not a valid date');
@@ -53,8 +53,8 @@ export function createClient({ token, userId, fetchImpl = fetch, pollMs = 60000,
     return body;
   }
 
-  async function waitUntilReady(id) {
-    for (let i = 0; i < maxPolls; i++) {
+  async function waitUntilReady(id, patience = 1) {
+    for (let i = 0; i < maxPolls * patience; i++) {
       const { status_code: status } = await call('GET', id, { fields: 'status_code' });
       if (status === 'FINISHED') return;
       if (status === 'ERROR' || status === 'EXPIRED') throw new Error(`Container ${id} is ${status}`);
@@ -70,9 +70,12 @@ export function createClient({ token, userId, fetchImpl = fetch, pollMs = 60000,
     },
     async prepareCarousel(imageUrls, caption) {
       const children = [];
-      for (const image_url of imageUrls) {
-        const { id } = await call('POST', `${userId}/media`, { image_url, is_carousel_item: 'true' });
-        await waitUntilReady(id);
+      for (const url of imageUrls) {
+        const isVideo = /\.mp4$/i.test(url);
+        const media = isVideo ? { media_type: 'VIDEO', video_url: url } : { image_url: url };
+        const { id } = await call('POST', `${userId}/media`, { ...media, is_carousel_item: 'true' });
+        // Instagram transcodes videos before they can join a carousel, which takes longer than images.
+        await waitUntilReady(id, isVideo ? 4 : 1);
         children.push(id);
       }
       const { id } = await call('POST', `${userId}/media`, { media_type: 'CAROUSEL', children: children.join(','), caption });

@@ -52,6 +52,23 @@ test('publishes an approved carousel in API order and records the result', async
   assert.equal(read().permalink, 'https://instagram.com/p/x');
 });
 
+test('sends MP4 slides as carousel videos', async () => {
+  const { root } = setup({ images: ['images/01.jpg', 'images/02.jpg'] });
+  fs.writeFileSync(path.join(root, 'demo', 'images', '00.mp4'), 'x');
+  const file = path.join(root, 'demo', 'post.json');
+  const post = JSON.parse(fs.readFileSync(file, 'utf8'));
+  fs.writeFileSync(file, JSON.stringify({ ...post, images: ['images/00.mp4', ...post.images] }));
+  const { calls, client } = fakeApi();
+  await run({ postsDir: root, baseUrl: 'https://cdn.test', client, now: NOW, log: () => {} });
+
+  const posts = calls.filter((c) => c.method === 'POST');
+  assert.equal(posts[0].params.media_type, 'VIDEO');
+  assert.equal(posts[0].params.video_url, 'https://cdn.test/posts/demo/images/00.mp4');
+  assert.equal(posts[0].params.is_carousel_item, 'true');
+  assert.equal(posts[1].params.image_url, 'https://cdn.test/posts/demo/images/01.jpg');
+  assert.equal(posts[3].params.children, 'C1,C2,C3');
+});
+
 test('never picks drafts or posts scheduled in the future', () => {
   assert.equal(findDuePost(setup({ status: 'draft' }).root, NOW), undefined);
   assert.equal(findDuePost(setup({ scheduled_at: '2026-12-01T09:00:00+09:00' }).root, NOW), undefined);
@@ -88,7 +105,7 @@ test('validation catches bad carousels', () => {
   const base = { caption: 'a', scheduled_at: '2026-11-10T09:00:00+09:00', images: ['images/01.jpg', 'images/02.jpg'] };
   assert.deepEqual(validatePost(base, dir), []);
   assert.match(validatePost({ ...base, images: ['images/01.jpg'] }, dir).join(), /2-10/);
-  assert.match(validatePost({ ...base, images: ['images/01.png', 'images/02.jpg'] }, dir).join(), /not a JPEG/);
+  assert.match(validatePost({ ...base, images: ['images/01.png', 'images/02.jpg'] }, dir).join(), /not a JPEG or MP4/);
   assert.match(validatePost({ ...base, images: ['images/01.jpg', 'images/09.jpg'] }, dir).join(), /missing/);
   assert.match(validatePost({ ...base, scheduled_at: null }, dir).join(), /scheduled_at/);
   assert.match(validatePost({ ...base, caption: Array(31).fill('#a').join(' ') }, dir).join(), /hashtags/);
