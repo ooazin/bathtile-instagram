@@ -1,0 +1,26 @@
+{
+  "slug": "kenzo-cloud-1200",
+  "template": "singleStrips",
+  "collection": "KENZO",
+  "ko": "겐조",
+  "header": "KENZO CLOUD 600×1200",
+  "coverAt": "bottom",
+  "sourceDir": "D:/4. 타일 이미지, 영상 RGB/KENZO",
+  "colors": [
+    { "productId": 492, "code": "BT-612KN00RJ", "name": "CLOUD", "face": "페턴/612KN00RJ/612KN00RJ_01.jpg" }
+  ],
+  "accent": { "onLight": "#6f6a62", "onDark": "#d9d4ca" },
+  "assets": [
+    { "file": "600X1200/612KN00RJ/墙-地-612KN00RJ (2).jpg", "crop": [0, 0, 3800, 4750], "out": "cover.jpg" },
+    { "file": "600X1200/612KN00RJ/墙-地-612KN00RJ (3).jpg", "crop": [200, 400, 1250, 3378], "out": "strip-0.jpg", "w": 592, "h": 1600 },
+    { "file": "600X1200/612KN00RJ/墙-地-612KN00RJ (4).jpg", "crop": [3000, 2550, 740, 1997], "out": "strip-1.jpg", "w": 592, "h": 1600 },
+    { "file": "겐조 디테일-클라우드.jpg", "crop": [900, 0, 1047, 2831], "out": "strip-2.jpg", "w": 592, "h": 1600 },
+    { "file": "600X1200/612KN00RJ/墙-地-612KN00RJ(5).jpg", "crop": [2400, 149, 2921, 3651], "out": "full.jpg" }
+  ],
+  "strips": {
+    "label": "세 가지 시선",
+    "lines": ["벽에서 바닥까지,", "<em>한 톤</em>의 화이트."],
+    "steps": ["벽", "바닥", "실물"]
+  },
+  "caption": "_\nKENZO CLOUD 600×1200\n겐조 화이트\n\n맑고 부드러운 화이트 위로 잔잔한 돌의 결이 은은하게 지나가는 KENZO CLOUD입니다.\n벽에서 바닥까지 한 톤으로 이어져 욕실을 넓고 차분하게 정돈해 줍니다.\n\n· 규격 600×1200\n· 마감 포세린 무광\n· 포장 1BOX 2pcs / 1.44㎡\n· 품번 BT-612KN00RJ\n\n· 제품 상세 : https://bathtileco.com/BT-porcelain600x1200/?idx=492\n\n#벳센타일 #타일 #포세린타일 #600x1200 #인테리어자재 #겐조 #스톤타일 #화이트타일 #욕실타일"
+}

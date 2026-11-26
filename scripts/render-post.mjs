@@ -818,7 +818,7 @@ function sgSpecSlide() {
 function s2CoverSlide() {
   const { c, title } = single();
   return page(`<img class="abs" src="cover.jpg" style="left:0;top:0;width:${W}px;height:${H}px">
-  <div class="abs" style="left:64px;top:96px;color:${INK}">
+  <div class="abs" style="left:64px;${source.coverAt === 'bottom' ? 'bottom:150px' : 'top:96px'};color:${INK}">
     <div class="en" style="font-size:18px;font-weight:600">${c.size}</div>
     <div style="margin-top:18px;font-size:72px;line-height:1;font-weight:400;letter-spacing:-.01em">${title}</div>
     <div style="margin-top:18px;font-size:26px;font-weight:400">${source.ko} ${c.ko}</div>
@@ -884,7 +884,21 @@ function matSlide() {
   ${logo('logo-white.png')}`, DARK, PAPER);
 }
 
+// Three tall views side by side: wall, floor and the real tile.
+function stripsSlide() {
+  const { label, lines, steps } = source.strips;
+  const w = 296;
+  const h = 800;
+  const cells = steps.map((s, i) => `<div><img src="strip-${i}.jpg" style="display:block;width:${w}px;height:${h}px;object-fit:cover">
+    <div style="margin-top:14px;display:flex;gap:10px;align-items:baseline"><span class="en" style="font-size:15px;font-weight:600;opacity:.6">0${i + 1}</span><span style="font-size:20px;font-weight:500">${s}</span></div></div>`).join('');
+  return page(`${edHeader(PAPER)}
+  <div class="abs" style="left:64px;right:64px;top:112px">${edLabel(label, source.accent.onDark)}${edHeadline(lines, source.accent.onDark)}</div>
+  <div class="abs" style="left:64px;top:340px;display:flex;gap:32px">${cells}</div>
+  ${logo('logo-white.png')}`, DARK, PAPER);
+}
+
 const TEMPLATES = {
+  singleStrips: () => [s2CoverSlide(), stripsSlide(), s2FullSlide(), sgSpecSlide()],
   singleMaterial: () => [s2CoverSlide(), matSlide(), s2FullSlide(), s2SpecSlide()],
   singleZoom: () => [s2CoverSlide(), s2ZoomSlide(), s2FullSlide(), s2SpecSlide()],
   single: () => [sgCoverSlide(), sgDetailSlide(), sgFacesSlide(), sgSpaceSlide(), sgSpecSlide()],
